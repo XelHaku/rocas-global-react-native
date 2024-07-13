@@ -1,88 +1,155 @@
 import React, { useState } from "react";
-import { StyleSheet, ScrollView, TouchableOpacity } from "react-native";
-import { Text, View } from "@/components/Themed";
+import { StyleSheet, ScrollView, TouchableOpacity, Modal, View } from "react-native";
+import { Text } from "@/components/Themed";
 import cursoData from "@/cursos/curso-01.json";
-import * as Speech from "expo-speech";
+import { FontAwesome } from '@expo/vector-icons';
 
 export default function TabOneScreen() {
-  const [isSpeaking, setIsSpeaking] = useState(false);
+  const [selectedModulo, setSelectedModulo] = useState(null);
 
-  const speakContent = (content) => {
-    if (isSpeaking) {
-      Speech.stop();
-      setIsSpeaking(false);
-    } else {
-      setIsSpeaking(true);
-      Speech.speak(content, {
-        language: "es", // Asumiendo que el contenido está en español
-        pitch: 1.2,
-        rate: 3,
-        onDone: () => setIsSpeaking(false),
-      });
-    }
+  const openModuloModal = (modulo) => {
+    setSelectedModulo(modulo);
   };
 
   return (
     <ScrollView style={styles.container}>
-      <Text style={styles.title}>Cursos Disponibles</Text>
       <View style={styles.card}>
         <Text style={styles.cardTitle}>{cursoData.nombre}</Text>
-        {cursoData.modulos.map((modulo, index) => (
-          <View key={modulo.id} style={styles.moduleCard}>
+        {cursoData.modulos.map((modulo) => (
+          <TouchableOpacity
+            key={modulo.id}
+            style={styles.moduleCard}
+            onPress={() => openModuloModal(modulo)}
+          >
             <Text style={styles.moduleTitle}>{modulo.nombre}</Text>
-            {modulo.paginas.map((pagina, pageIndex) => (
-              <View key={pagina.id} style={styles.pageCard}>
-                <Text style={styles.pageTitle}>{pagina.nombre}</Text>
-                <Text style={styles.pageType}>{pagina.tipo}</Text>
-                {pagina.tipo === "leccion" && (
-                  <Text style={styles.pageContent} numberOfLines={2}>
-                    {pagina.contenido}
-                  </Text>
-                )}
-                {pagina.tipo === "trivia" && (
-                  <Text style={styles.pageContent}>
-                    Pregunta: {pagina.pregunta}
-                  </Text>
-                )}
-                {pagina.tipo === "video" && (
-                  <Text style={styles.pageContent}>URL: {pagina.url}</Text>
-                )}
-                <TouchableOpacity
-                  style={styles.speakButton}
-                  onPress={() =>
-                    speakContent(
-                      pagina.tipo === "leccion"
-                        ? pagina.contenido
-                        : pagina.tipo === "trivia"
-                        ? `Pregunta: ${pagina.pregunta}`
-                        : "Este contenido no se puede leer en voz alta."
-                    )
-                  }
-                >
-                  <Text style={styles.speakButtonText}>
-                    {isSpeaking ? "Detener" : "Leer en voz alta"}
-                  </Text>
-                </TouchableOpacity>
-              </View>
-            ))}
-          </View>
+            <FontAwesome name="chevron-right" size={20} color="#666" />
+          </TouchableOpacity>
         ))}
       </View>
+
+      {/* Modal para mostrar el contenido del módulo seleccionado */}
+      {selectedModulo && (
+        <Modal
+          animationType="slide"
+          transparent={true}
+          visible={!!selectedModulo}
+          onRequestClose={() => setSelectedModulo(null)}
+        >
+          <View style={styles.modalView}>
+            <Text style={styles.modalTitle}>{selectedModulo.nombre}</Text>
+            <ScrollView>
+              {selectedModulo.paginas.map((pagina) => (
+                <View key={pagina.id} style={styles.pageCard}>
+                  <Text style={styles.pageTitle}>{pagina.nombre}</Text>
+                  <Text style={styles.pageType}>{pagina.tipo}</Text>
+                  {pagina.tipo === "leccion" && (
+                    <Text style={styles.pageContent} numberOfLines={2}>
+                      {pagina.contenido}
+                    </Text>
+                  )}
+                  {pagina.tipo === "trivia" && (
+                    <Text style={styles.pageContent}>
+                      Pregunta: {pagina.pregunta}
+                    </Text>
+                  )}
+                  {pagina.tipo === "video" && (
+                    <Text style={styles.pageContent}>URL: {pagina.url}</Text>
+                  )}
+                </View>
+              ))}
+            </ScrollView>
+            <TouchableOpacity
+              style={styles.closeButton}
+              onPress={() => setSelectedModulo(null)}
+            >
+              <Text style={styles.closeButtonText}>Cerrar</Text>
+            </TouchableOpacity>
+          </View>
+        </Modal>
+      )}
     </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
-  // ... (estilos previos se mantienen igual)
-  speakButton: {
-    backgroundColor: "#4CAF50",
-    padding: 10,
-    borderRadius: 5,
-    marginTop: 10,
+  container: {
+    flex: 1,
+    padding: 20,
   },
-  speakButtonText: {
-    color: "#FFFFFF",
-    textAlign: "center",
+  card: {
+    backgroundColor: '#f0f0f0',
+    borderRadius: 10,
+    padding: 15,
+    marginBottom: 20,
+  },
+  cardTitle: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    marginBottom: 15,
+  },
+  moduleCard: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    backgroundColor: '#ffffff',
+    borderRadius: 6,
+    padding: 15,
+    marginBottom: 10,
+  },
+  moduleTitle: {
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+  modalView: {
+    margin: 20,
+    backgroundColor: "white",
+    borderRadius: 20,
+    padding: 35,
+    alignItems: "center",
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
+    maxHeight: '80%',
+  },
+  modalTitle: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    marginBottom: 15,
+  },
+  pageCard: {
+    backgroundColor: '#f9f9f9',
+    borderRadius: 6,
+    padding: 10,
+    marginBottom: 10,
+    width: '100%',
+  },
+  pageTitle: {
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+  pageType: {
+    fontSize: 14,
+    color: '#666',
+  },
+  pageContent: {
+    fontSize: 14,
+    marginTop: 5,
+  },
+  closeButton: {
+    backgroundColor: "#2196F3",
+    borderRadius: 20,
+    padding: 10,
+    elevation: 2,
+    marginTop: 15,
+  },
+  closeButtonText: {
+    color: "white",
     fontWeight: "bold",
+    textAlign: "center"
   },
 });
