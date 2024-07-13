@@ -65,3 +65,9 @@ Considera usar Context API o Redux para manejar el estado global de la aplicaci�
 
 
 Esta estructura te permitirá tener una aplicación modular y escalable, facilitando la adición de nuevos cursos y tipos de contenido en el futuro. Además, el uso de modales para los módulos y páginas proporciona una experiencia de usuario fluida y enfocada en el contenido actual.
+
+
+
+
+
+https://docs.expo.dev/versions/latest/sdk/speech/#speechoptions
