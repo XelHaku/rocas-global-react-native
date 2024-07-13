@@ -1,0 +1,238 @@
+{
+  "id": "vision-rocas-global",
+  "nombre": "Visión Rocas Global",
+  "modulos": [
+    {
+      "id": "evangelizacion",
+      "nombre": "Evangelización",
+      "paginas": [
+        {
+          "id": "intro-evangelismo",
+          "tipo": "leccion",
+          "nombre": "Introducción al Evangelismo",
+          "contenido": "Bienvenidos al módulo de evangelismo. En este capítulo, aprenderemos sobre la estructura de evangelismo en cuatro fases fundamentales: establecer el ministerio, colocar un líder, entrenar al evangelista y establecer turnos de evangelismo. Este proceso es esencial para llevar el mensaje de Jesús a más personas."
+        },
+        {
+          "id": "fase-1-establecer",
+          "tipo": "leccion",
+          "nombre": "Fase I: Establecer el Ministerio",
+          "contenido": "En la primera fase, es crucial establecer un ministerio o departamento de evangelismo. Publicar el lanzamiento, poner pancartas y carteles, y establecer una fecha oficial para el lanzamiento son pasos clave. Esto crea una base sólida y visible para el ministerio."
+        },
+        {
+          "id": "fase-2-lider",
+          "tipo": "leccion",
+          "nombre": "Fase II: Colocar un Líder",
+          "contenido": "La segunda fase implica colocar un líder en el departamento de evangelismo. Este líder no necesita ser parte del ministerio quíntuple. Formar un equipo de apoyo y reclutar a la iglesia mediante cuestionarios y medios de comunicación es esencial para el éxito del ministerio."
+        },
+        {
+          "id": "fase-3-entrenamiento",
+          "tipo": "leccion",
+          "nombre": "Fase III: Entrenamiento del Evangelista",
+          "contenido": "En la tercera fase, se debe entrenar al evangelista. El lanzamiento de una escuela de ministerio y el uso de un manual específico son fundamentales. Registrarlos en la escuela de evangelistas y realizar sesiones de formación regulares asegura que estén bien preparados."
+        },
+        {
+          "id": "fase-4-turnos",
+          "tipo": "leccion",
+          "nombre": "Fase IV: Establecer Turnos de Evangelismo",
+          "contenido": "La fase final consiste en establecer un turno de evangelismo con un día, hora y lugar definidos. Enviar a los evangelistas en equipos, grabar testimonios y milagros, y reportar a la iglesia lo que está ocurriendo fomenta la participación y el entusiasmo en la congregación."
+        },
+        {
+          "id": "trivia-evangelismo",
+          "tipo": "trivia",
+          "nombre": "Trivia de Evangelismo",
+          "pregunta": "¿Cuál es una de las primeras acciones para establecer un ministerio de evangelismo?",
+          "opciones": [
+            {
+              "texto": "Colocar un líder",
+              "esCorrecta": false,
+              "explicacion": "Esto es parte de la Fase II."
+            },
+            {
+              "texto": "Establecer una fecha oficial para el lanzamiento",
+              "esCorrecta": true,
+              "explicacion": "Esta es una de las primeras acciones importantes para establecer el ministerio."
+            },
+            {
+              "texto": "Entrenar al evangelista",
+              "esCorrecta": false,
+              "explicacion": "Esto ocurre en la Fase III."
+            },
+            {
+              "texto": "Grabar testimonios de milagros",
+              "esCorrecta": false,
+              "explicacion": "Esto es parte de la Fase IV."
+            }
+          ]
+        },
+        {
+          "id": "video-intro-evangelismo",
+          "tipo": "video",
+          "nombre": "Introducción al Evangelismo",
+          "url": "https://example.com/videos/introduccion_evangelismo.mp4"
+        }
+      ]
+    },
+    {
+      "id": "afirmacion",
+      "nombre": "Afirmación",
+      "paginas": [
+        {
+          "id": "intro-afirmacion",
+          "tipo": "leccion",
+          "nombre": "Introducción a la Afirmación",
+          "contenido": "Bienvenidos al módulo de afirmación. En este capítulo, exploraremos la estructura del departamento de afirmación, que incluye al pastor de afirmación, asistente administrativo y voluntarios. Este departamento es esencial para guiar a los nuevos creyentes y asegurar su integración en la iglesia."
+        },
+        {
+          "id": "componentes-afirmacion",
+          "tipo": "leccion",
+          "nombre": "Componentes del Departamento de Afirmación",
+          "contenido": "El departamento de afirmación se compone de un pastor de afirmación, un asistente administrativo y voluntarios. Estos voluntarios supervisan la experiencia del nuevo creyente durante los servicios dominicales, asegurando una transición suave para los nuevos miembros."
+        },
+        {
+          "id": "ciclos-formacion",
+          "tipo": "leccion",
+          "nombre": "Ciclos de Formación y Crecimiento",
+          "contenido": "La formación en el departamento de afirmación se organiza en ciclos que abarcan desde los fundamentos cristianos hasta el liderazgo avanzado. Estos ciclos incluyen retiros y orientaciones específicas para asegurar el crecimiento integral de los miembros."
+        },
+        {
+          "id": "trivia-afirmacion",
+          "tipo": "trivia",
+          "nombre": "Trivia de Afirmación",
+          "pregunta": "¿Quiénes ayudan a supervisar la experiencia del nuevo creyente los domingos?",
+          "opciones": [
+            {
+              "texto": "El pastor principal",
+              "esCorrecta": false,
+              "explicacion": "No es específico del departamento de afirmación."
+            },
+            {
+              "texto": "El asistente administrativo",
+              "esCorrecta": false,
+              "explicacion": "Provee asistencia al pastor, pero no supervisa directamente."
+            },
+            {
+              "texto": "Los voluntarios de afirmación",
+              "esCorrecta": true,
+              "explicacion": "Los voluntarios son quienes supervisan la experiencia del nuevo creyente los domingos."
+            },
+            {
+              "texto": "Los líderes de célula",
+              "esCorrecta": false,
+              "explicacion": "No están directamente involucrados en la supervisión dominical."
+            }
+          ]
+        },
+        {
+          "id": "video-estructura-afirmacion",
+          "tipo": "video",
+          "nombre": "Estructura del Departamento de Afirmación",
+          "url": "https://example.com/videos/estructura_afirmacion.mp4"
+        }
+      ]
+    },
+    {
+      "id": "enviar",
+      "nombre": "Enviar",
+      "paginas": [
+        {
+          "id": "intro-casas-paz",
+          "tipo": "leccion",
+          "nombre": "Introducción a las Casas de Paz",
+          "contenido": "Bienvenidos al módulo de Casas de Paz. En este capítulo, aprenderemos sobre cómo establecer Casas de Paz en diferentes lugares como casas, apartamentos y oficinas. Estas casas son puntos de encuentro para la comunidad donde se enseña la palabra de Dios y se fomenta la comunión."
+        },
+        {
+          "id": "objetivos-casas-paz",
+          "tipo": "leccion",
+          "nombre": "Objetivos de las Casas de Paz",
+          "contenido": "Las Casas de Paz tienen varios objetivos, incluyendo evangelismo, alabanza y adoración, enseñanza de la Palabra de Dios, oración por las necesidades de los demás y fomentar la comunidad. Estas casas sirven como puentes para aquellos que no asistirían a una iglesia de otra manera."
+        },
+        {
+          "id": "trivia-casas-paz",
+          "tipo": "trivia",
+          "nombre": "Trivia de Casas de Paz",
+          "pregunta": "¿Cuál es uno de los objetivos principales de las Casas de Paz?",
+          "opciones": [
+            {
+              "texto": "Recaudar fondos",
+              "esCorrecta": false,
+              "explicacion": "No es un objetivo principal de las Casas de Paz."
+            },
+            {
+              "texto": "Fomentar la comunidad y unidad",
+              "esCorrecta": true,
+              "explicacion": "Este es uno de los objetivos principales de las Casas de Paz."
+            },
+            {
+              "texto": "Organizar eventos sociales",
+              "esCorrecta": false,
+              "explicacion": "Aunque puede ocurrir, no es el objetivo principal."
+            },
+            {
+              "texto": "Planificar retiros",
+              "esCorrecta": false,
+              "explicacion": "Es una actividad separada."
+            }
+          ]
+        },
+        {
+          "id": "video-establecer-casas-paz",
+          "tipo": "video",
+          "nombre": "Cómo Establecer Casas de Paz",
+          "url": "https://example.com/videos/establecer_casas_paz.mp4"
+        }
+      ]
+    },
+    {
+      "id": "discipular",
+      "nombre": "Discipular",
+      "paginas": [
+        {
+          "id": "intro-liderazgo",
+          "tipo": "leccion",
+          "nombre": "Introducción al Liderazgo",
+          "contenido": "Bienvenidos al módulo de liderazgo. En este capítulo, exploraremos la estructura del departamento de liderazgo, que incluye al pastor de liderazgo, asistentes administrativos y representantes de liderazgo de cada red. Este departamento asegura la formación y el desarrollo continuo de líderes dentro de la iglesia."
+        },
+        {
+          "id": "objetivos-lider-discipulos",
+          "tipo": "leccion",
+          "nombre": "Objetivos de un Líder de Discípulos",
+          "contenido": "Los líderes de discípulos tienen como objetivo ayudar a los discípulos a desarrollar su carácter a la medida de Cristo, ser modelos a seguir e inspirar a otros, y proveer el material y entrenamiento necesarios para sus responsabilidades."
+        },
+        {
+          "id": "trivia-lider-discipulos",
+          "tipo": "trivia",
+          "nombre": "Trivia de Liderazgo de Discípulos",
+          "pregunta": "¿Cuál es una de las responsabilidades de un líder de discípulos?",
+          "opciones": [
+            {
+              "texto": "Organizar eventos sociales",
+              "esCorrecta": false,
+              "explicacion": "No es una responsabilidad principal."
+            },
+            {
+              "texto": "Supervisar la contabilidad de la iglesia",
+              "esCorrecta": false,
+              "explicacion": "No es relevante para un líder de discípulos."
+            },
+            {
+              "texto": "Ayudar a desarrollar el carácter de los discípulos",
+              "esCorrecta": true,
+              "explicacion": "Esta es una responsabilidad clave de un líder de discípulos."
+            },
+            {
+              "texto": "Planificar retiros",
+              "esCorrecta": false,
+              "explicacion": "Es una actividad separada."
+            }
+          ]
+        },
+        {
+          "id": "video-objetivos-lider-discipulos",
+          "tipo": "video",
+          "nombre": "Objetivos de un Líder de Discípulos",
+          "url": "https://example.com/videos/objetivos_lider_discipulos.mp4"
+        }
+      ]
+    }
+  ]
+}

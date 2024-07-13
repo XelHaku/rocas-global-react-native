@@ -31,7 +31,8 @@
       "typedRoutes": true
     },
     "extra": {
-      "privyId": "YOUR_PRIVY_ID_HERE"
+      "privyId": "YOUR_PRIVY_ID_HERE",
+      "MONGODB_URI": "YOUR_MONGODB"
     }
   }
 }
