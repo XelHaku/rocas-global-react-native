@@ -6,26 +6,74 @@ import { FontAwesome } from '@expo/vector-icons';
 
 export default function TabOneScreen() {
   const [selectedModulo, setSelectedModulo] = useState(null);
+  const [showCourseModal, setShowCourseModal] = useState(false);
 
   const openModuloModal = (modulo) => {
     setSelectedModulo(modulo);
   };
 
+  const openCourseModal = () => {
+    setShowCourseModal(true);
+  };
+
+  
   return (
     <ScrollView style={styles.container}>
-      <View style={styles.card}>
-        <Text style={styles.cardTitle}>{cursoData.nombre}</Text>
-        {cursoData.modulos.map((modulo) => (
-          <TouchableOpacity
-            key={modulo.id}
-            style={styles.moduleCard}
-            onPress={() => openModuloModal(modulo)}
-          >
-            <Text style={styles.moduleTitle}>{modulo.nombre}</Text>
-            <FontAwesome name="chevron-right" size={20} color="#666" />
-          </TouchableOpacity>
-        ))}
-      </View>
+<TouchableOpacity style={styles.courseContainer} onPress={openCourseModal}>
+  <Text style={styles.courseTitle}>Curso {cursoData.id}  </Text>
+  <Text style={styles.courseTitle}>{cursoData.nombre}  </Text>
+</TouchableOpacity>
+
+<TouchableOpacity style={styles.courseContainer} onPress={openCourseModal}>
+  <Text style={styles.courseTitle}>Curso {cursoData.id}  </Text>
+  <Text style={styles.courseTitle}>{cursoData.nombre}  </Text>
+</TouchableOpacity>
+
+<TouchableOpacity style={styles.courseContainer} onPress={openCourseModal}>
+  <Text style={styles.courseTitle}>Curso {cursoData.id}  </Text>
+  <Text style={styles.courseTitle}>{cursoData.nombre}  </Text>
+</TouchableOpacity>
+
+<TouchableOpacity style={styles.courseContainer} onPress={openCourseModal}>
+  <Text style={styles.courseTitle}>Curso {cursoData.id}  </Text>
+  <Text style={styles.courseTitle}>{cursoData.nombre}  </Text>
+</TouchableOpacity>
+
+<TouchableOpacity style={styles.courseContainer} onPress={openCourseModal}>
+  <Text style={styles.courseTitle}>Curso {cursoData.id}  </Text>
+  <Text style={styles.courseTitle}>{cursoData.nombre}  </Text>
+</TouchableOpacity>
+
+<TouchableOpacity style={styles.courseContainer} onPress={openCourseModal}>
+  <Text style={styles.courseTitle}>Curso {cursoData.id}  </Text>
+  <Text style={styles.courseTitle}>{cursoData.nombre}  </Text>
+</TouchableOpacity>
+
+<TouchableOpacity style={styles.courseContainer} onPress={openCourseModal}>
+  <Text style={styles.courseTitle}>Curso {cursoData.id}  </Text>
+  <Text style={styles.courseTitle}>{cursoData.nombre}  </Text>
+</TouchableOpacity>
+
+<Modal visible={showCourseModal} animationType="slide" onRequestClose={() => setShowCourseModal(false)}>
+  <View style={styles.modalContainer}> 
+    {cursoData.modulos.map((modulo) => (
+      <TouchableOpacity 
+        key={modulo.id} 
+        style={[styles.moduleCard, { backgroundColor: modulo.color || '#4CAF50' }]}
+        onPress={() => {
+          setSelectedModulo(modulo); // Abrir el modal de lecciones
+          setShowCourseModal(false); // Cerrar el modal del curso
+        }}
+      >
+        <FontAwesome name={modulo.icono || 'book'} size={36} color="white" />
+        <Text style={styles.moduleTitle}>{modulo.nombre}</Text>
+      </TouchableOpacity>
+    ))}
+    <TouchableOpacity style={styles.closeButton} onPress={() => setShowCourseModal(false)}>
+      <Text style={styles.closeButtonText}>Cerrar</Text>
+    </TouchableOpacity>
+  </View>
+</Modal>
 
       {/* Modal para mostrar el contenido del módulo seleccionado */}
       {selectedModulo && (
@@ -151,4 +199,22 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     textAlign: "center"
   },
+  courseContainer: {
+    backgroundColor: '#ffffff', // Fondo blanco de la tarjeta
+    borderRadius: 10,         // Bordes redondeados
+    padding: 20,              // Espacio interno
+    shadowColor: '#000',     // Sombra para darle profundidad
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 2,
+    elevation: 5,             // Elevación para Android
+    marginBottom: 20,         // Margen inferior para separar de los módulos
+    alignItems: 'center',     // Centrar el contenido horizontalmente
+  },
+  courseTitle: {
+    fontSize: 28,
+    fontWeight: 'bold',
+    color: '#333', 
+  },
+
 });

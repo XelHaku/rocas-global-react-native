@@ -4,6 +4,7 @@ import Constants from "expo-constants";
 
 import EditScreenInfo from "@/components/EditScreenInfo";
 import { Text, View } from "@/components/Themed";
+import React from 'react';
 
 export default function ModalScreen() {
   const privyId = Constants.expoConfig.extra.privyId;
