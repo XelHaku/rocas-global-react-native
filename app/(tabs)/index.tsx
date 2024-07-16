@@ -31,10 +31,10 @@ export default function TabOneScreen() {
       {selectedModulo && (
         <Modal
           animationType="slide"
-          transparent={true}
           visible={!!selectedModulo}
           onRequestClose={() => setSelectedModulo(null)}
         >
+          <View style={styles.modalContainer}>
           <View style={styles.modalView}>
             <Text style={styles.modalTitle}>{selectedModulo.nombre}</Text>
             <ScrollView>
@@ -64,6 +64,7 @@ export default function TabOneScreen() {
             >
               <Text style={styles.closeButtonText}>Cerrar</Text>
             </TouchableOpacity>
+          </View>
           </View>
         </Modal>
       )}
@@ -96,25 +97,23 @@ const styles = StyleSheet.create({
     padding: 15,
     marginBottom: 10,
   },
+  modalContainer: {  // Full-screen container styles
+    flex: 1, 
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
   moduleTitle: {
     fontSize: 16,
     fontWeight: 'bold',
   },
   modalView: {
     margin: 20,
+    width: '95%', // Make the modal take up most of the screen width
     backgroundColor: "white",
     borderRadius: 20,
-    padding: 35,
+    padding: 10,
     alignItems: "center",
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 2
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 4,
-    elevation: 5,
-    maxHeight: '80%',
+    maxHeight: '100%',
   },
   modalTitle: {
     fontSize: 20,
