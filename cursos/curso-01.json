@@ -1,6 +1,7 @@
 {
   "id": "1",
   "nombre": "Visión Rocas Global",
+  "imagen": "./favicon.png",
   "modulos": [
     {
       "id": "evangelizacion",

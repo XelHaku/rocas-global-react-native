@@ -59,6 +59,13 @@ export default function TabLayout() {
           tabBarIcon: ({ color }) => <TabBarIcon name="th-large" color={color} />, // th-large es el ícono de FontAwesome para módulos
         }}
       />
+         <Tabs.Screen
+        name="profile"
+        options={{
+          title: 'Profile',
+          tabBarIcon: ({ color }) => <TabBarIcon name="person" color={color} />, // th-large es el ícono de FontAwesome para módulos
+        }}
+      />
     </Tabs>
   );
 }

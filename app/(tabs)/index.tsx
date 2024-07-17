@@ -54,26 +54,28 @@ export default function TabOneScreen() {
   <Text style={styles.courseTitle}>{cursoData.nombre}  </Text>
 </TouchableOpacity>
 
-<Modal visible={showCourseModal} animationType="slide" onRequestClose={() => setShowCourseModal(false)}>
-  <View style={styles.modalContainer}> 
-    {cursoData.modulos.map((modulo) => (
-      <TouchableOpacity 
-        key={modulo.id} 
-        style={[styles.moduleCard, { backgroundColor: modulo.color || '#4CAF50' }]}
-        onPress={() => {
-          setSelectedModulo(modulo); // Abrir el modal de lecciones
-          setShowCourseModal(false); // Cerrar el modal del curso
-        }}
-      >
-        <FontAwesome name={modulo.icono || 'book'} size={36} color="white" />
-        <Text style={styles.moduleTitle}>{modulo.nombre}</Text>
-      </TouchableOpacity>
-    ))}
-    <TouchableOpacity style={styles.closeButton} onPress={() => setShowCourseModal(false)}>
-      <Text style={styles.closeButtonText}>Cerrar</Text>
-    </TouchableOpacity>
-  </View>
-</Modal>
+<Modal visible={!!showCourseModal} animationType="slide" onRequestClose={() => setShowCourseModal(null)}>
+        <View style={styles.modalContainer}>
+          <Text style={styles.modalTitle}>{selectedCourse?.nombre}</Text> 
+          {selectedCourse?.modulos.map((modulo) => (
+            <TouchableOpacity
+              key={modulo.id}
+              style={[styles.moduleCard, { backgroundColor: modulo.color || '#4CAF50' }]}
+              onPress={() => {
+                setSelectedModulo(modulo); 
+                setShowCourseModal(null); 
+              }}
+            >
+              <FontAwesome name={modulo.icono || 'book'} size={36} color="white" />
+              <Text style={styles.moduleTitle}>{modulo.nombre}</Text>
+            </TouchableOpacity>
+          ))}
+          {/* Botón para cerrar el modal del curso */}
+          <TouchableOpacity style={styles.closeButton} onPress={() => setShowCourseModal(null)}>
+            <Text style={styles.closeButtonText}>Cerrar</Text>
+          </TouchableOpacity>
+        </View>
+      </Modal>
 
       {/* Modal para mostrar el contenido del módulo seleccionado */}
       {selectedModulo && (
