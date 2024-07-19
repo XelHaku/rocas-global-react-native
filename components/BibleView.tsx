@@ -1,7 +1,7 @@
 // components/BibleView.js
 import React from "react";
 import { View, FlatList } from "react-native";
-import { BibleMetadata } from "../assets/biblia";
+import { BibleMetadata } from "../json/biblia";
 import BookItem from "./BookItem";
 
 const BibleView = ({ navigation }) => {
