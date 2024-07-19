@@ -8,9 +8,7 @@ export default function TabOneScreen() {
   const [selectedModulo, setSelectedModulo] = useState(null);
   const [showCourseModal, setShowCourseModal] = useState(false);
 
-  const openModuloModal = (modulo) => {
-    setSelectedModulo(modulo);
-  };
+
 
   const openCourseModal = () => {
     setShowCourseModal(true);
@@ -24,100 +22,7 @@ export default function TabOneScreen() {
   <Text style={styles.courseTitle}>{cursoData.nombre}  </Text>
 </TouchableOpacity>
 
-<TouchableOpacity style={styles.courseContainer} onPress={openCourseModal}>
-  <Text style={styles.courseTitle}>Curso {cursoData.id}  </Text>
-  <Text style={styles.courseTitle}>{cursoData.nombre}  </Text>
-</TouchableOpacity>
-
-<TouchableOpacity style={styles.courseContainer} onPress={openCourseModal}>
-  <Text style={styles.courseTitle}>Curso {cursoData.id}  </Text>
-  <Text style={styles.courseTitle}>{cursoData.nombre}  </Text>
-</TouchableOpacity>
-
-<TouchableOpacity style={styles.courseContainer} onPress={openCourseModal}>
-  <Text style={styles.courseTitle}>Curso {cursoData.id}  </Text>
-  <Text style={styles.courseTitle}>{cursoData.nombre}  </Text>
-</TouchableOpacity>
-
-<TouchableOpacity style={styles.courseContainer} onPress={openCourseModal}>
-  <Text style={styles.courseTitle}>Curso {cursoData.id}  </Text>
-  <Text style={styles.courseTitle}>{cursoData.nombre}  </Text>
-</TouchableOpacity>
-
-<TouchableOpacity style={styles.courseContainer} onPress={openCourseModal}>
-  <Text style={styles.courseTitle}>Curso {cursoData.id}  </Text>
-  <Text style={styles.courseTitle}>{cursoData.nombre}  </Text>
-</TouchableOpacity>
-
-<TouchableOpacity style={styles.courseContainer} onPress={openCourseModal}>
-  <Text style={styles.courseTitle}>Curso {cursoData.id}  </Text>
-  <Text style={styles.courseTitle}>{cursoData.nombre}  </Text>
-</TouchableOpacity>
-
-<Modal visible={!!showCourseModal} animationType="slide" onRequestClose={() => setShowCourseModal(null)}>
-        <View style={styles.modalContainer}>
-          <Text style={styles.modalTitle}>{selectedCourse?.nombre}</Text> 
-          {selectedCourse?.modulos.map((modulo) => (
-            <TouchableOpacity
-              key={modulo.id}
-              style={[styles.moduleCard, { backgroundColor: modulo.color || '#4CAF50' }]}
-              onPress={() => {
-                setSelectedModulo(modulo); 
-                setShowCourseModal(null); 
-              }}
-            >
-              <FontAwesome name={modulo.icono || 'book'} size={36} color="white" />
-              <Text style={styles.moduleTitle}>{modulo.nombre}</Text>
-            </TouchableOpacity>
-          ))}
-          {/* Botón para cerrar el modal del curso */}
-          <TouchableOpacity style={styles.closeButton} onPress={() => setShowCourseModal(null)}>
-            <Text style={styles.closeButtonText}>Cerrar</Text>
-          </TouchableOpacity>
-        </View>
-      </Modal>
-
-      {/* Modal para mostrar el contenido del módulo seleccionado */}
-      {selectedModulo && (
-        <Modal
-          animationType="slide"
-          visible={!!selectedModulo}
-          onRequestClose={() => setSelectedModulo(null)}
-        >
-          <View style={styles.modalContainer}>
-          <View style={styles.modalView}>
-            <Text style={styles.modalTitle}>{selectedModulo.nombre}</Text>
-            <ScrollView>
-              {selectedModulo.paginas.map((pagina) => (
-                <View key={pagina.id} style={styles.pageCard}>
-                  <Text style={styles.pageTitle}>{pagina.nombre}</Text>
-                  <Text style={styles.pageType}>{pagina.tipo}</Text>
-                  {pagina.tipo === "leccion" && (
-                    <Text style={styles.pageContent} numberOfLines={2}>
-                      {pagina.contenido}
-                    </Text>
-                  )}
-                  {pagina.tipo === "trivia" && (
-                    <Text style={styles.pageContent}>
-                      Pregunta: {pagina.pregunta}
-                    </Text>
-                  )}
-                  {pagina.tipo === "video" && (
-                    <Text style={styles.pageContent}>URL: {pagina.url}</Text>
-                  )}
-                </View>
-              ))}
-            </ScrollView>
-            <TouchableOpacity
-              style={styles.closeButton}
-              onPress={() => setSelectedModulo(null)}
-            >
-              <Text style={styles.closeButtonText}>Cerrar</Text>
-            </TouchableOpacity>
-          </View>
-          </View>
-        </Modal>
-      )}
+{/*  */}
     </ScrollView>
   );
 }
