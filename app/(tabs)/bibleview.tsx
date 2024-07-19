@@ -3,7 +3,7 @@ import { StyleSheet } from 'react-native';
 import {  View } from '@/components/Themed';
 import React from 'react';
 
-export default function Biblia() {
+export default function BibleView() {
   return (
     <View style={styles.container}>
     </View>

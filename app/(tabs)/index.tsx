@@ -2,14 +2,9 @@ import React, { useState } from "react";
 import { StyleSheet, ScrollView, TouchableOpacity, Modal, View } from "react-native";
 import { Text } from "@/components/Themed";
 import cursoData from "@/cursos/curso-01.json";
-import { FontAwesome } from '@expo/vector-icons';
 
 export default function TabOneScreen() {
-  const [selectedModulo, setSelectedModulo] = useState(null);
   const [showCourseModal, setShowCourseModal] = useState(false);
-
-
-
   const openCourseModal = () => {
     setShowCourseModal(true);
   };

@@ -46,7 +46,7 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="biblia"
+        name="bibleview"
         options={{
           title: 'Biblia',
           tabBarIcon: ({ color }) => <TabBarIcon name="book" color={color} />,
