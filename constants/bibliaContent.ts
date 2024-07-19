@@ -1,3 +1,4 @@
+//constants\bibliaContent.ts
 import abdias from "@/json/biblia/abdias";
 import amos from "@/json/biblia/amos";
 import apocalipsis from "@/json/biblia/apocalipsis";

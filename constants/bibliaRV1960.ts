@@ -1,3 +1,4 @@
+//constants\bibliaRV1960.ts
 export const bibliaRV1960 = [
     { nombre: "Genesis", archivo: "genesis.json" },
     { nombre: "Exodo", archivo: "exodo.json" },
