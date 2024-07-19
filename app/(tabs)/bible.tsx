@@ -1,4 +1,4 @@
-//app\(tabs)\bible.tsx
+// app(tabs)/bible.tsx
 import React, { useRef, useState } from 'react';
 import { StyleSheet, ScrollView, View, Text, TouchableOpacity } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
@@ -7,11 +7,12 @@ import { bibliaContent } from '@/constants/bibliaContent';
 
 export default function Bible() {
   const [selectedBook, setSelectedBook] = useState(bibliaRV1960[0].archivo);
-  const [selectedChapter, setSelectedChapter] = useState(1); // Estado para el capítulo
+  const [selectedChapter, setSelectedChapter] = useState(1);
+  const [favoriteVerses, setFavoriteVerses] = useState<string[]>([]);
+  const scrollViewRef = useRef<ScrollView>(null);
 
   const bookContent = bibliaContent[selectedBook as keyof typeof bibliaContent] || [];
-  const chapterContent = bookContent[selectedChapter - 1] || []; // Contenido del capítulo
-  const scrollViewRef = useRef<ScrollView>(null);
+  const chapterContent = bookContent[selectedChapter - 1] || [];
 
   const handleChapterChange = (chapter: number) => {
     setSelectedChapter(chapter);
@@ -21,14 +22,24 @@ export default function Bible() {
     });
   };
 
+  const toggleFavorite = (verseText: string) => {
+    setFavoriteVerses(prevFavorites => {
+      if (prevFavorites.includes(verseText)) {
+        return prevFavorites.filter(v => v !== verseText);
+      } else {
+        return [...prevFavorites, verseText];
+      }
+    });
+  };
+
   return (
     <View style={styles.container}>
-      <Picker 
+      <Picker
         selectedValue={selectedBook}
         style={styles.picker}
         onValueChange={(itemValue) => {
           setSelectedBook(itemValue);
-          setSelectedChapter(1); 
+          setSelectedChapter(1);
         }}
       >
         {bibliaRV1960.map((book) => (
@@ -46,11 +57,11 @@ export default function Bible() {
         decelerationRate="fast"
         onMomentumScrollEnd={(event) => {
           const chapter = Math.round(event.nativeEvent.contentOffset.x / ITEM_WIDTH) + 1;
-          handleChapterChange(chapter); 
+          handleChapterChange(chapter);
         }}
       >
         {Array.from({ length: bookContent.length }, (_, i) => i + 1).map((chapter) => (
-          <TouchableOpacity // Usar TouchableOpacity para detectar toques
+          <TouchableOpacity
             key={chapter}
             style={[
               styles.chapterItem,
@@ -65,47 +76,63 @@ export default function Bible() {
 
       <ScrollView style={styles.contentContainer}>
         {chapterContent.map((verse, index) => (
-          <View key={index} style={styles.verse}>
-            <Text style={styles.verseNumber}>{index + 1}</Text>
-            <Text style={styles.verseText}>{verse}</Text>
-          </View>
+          <TouchableOpacity key={index} onPress={() => toggleFavorite(verse)}>
+            <View style={[
+              styles.verse, 
+              favoriteVerses.includes(verse) && styles.favoriteVerse
+            ]}>
+              <Text style={styles.verseNumber}>{index + 1}</Text>
+              <Text style={styles.verseText}>{verse}</Text>
+            </View>
+          </TouchableOpacity>
         ))}
       </ScrollView>
     </View>
   );
 }
-const ITEM_WIDTH = 80; // Ancho de cada elemento en el ScrollView
+
+const ITEM_WIDTH = 50;
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 20,
+    padding: 9,
   },
   picker: {
-    height: 50,
+    height: 30,
     width: '100%',
+    borderRadius: 10,            
+    borderWidth: 1,              
+    borderColor: '#ddd',       
+    paddingHorizontal: 15,       
   },
   contentContainer: {
     flex: 1,
     marginTop: 20,
+    padding: 20,        
+    borderRadius: 10,   
+    backgroundColor: '#fff', 
+    elevation: 5,       
+    shadowColor: '#000', 
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 2,
   },
-  content: {
-    fontSize: 16,
-  },
+  
   verse: {
-    flexDirection: 'row', 
-    marginBottom: 5, 
+    flexDirection: 'row',
+    marginBottom: 5,
   },
   verseNumber: {
-    fontWeight: 'bold', 
-    marginRight: 5,      
+    fontWeight: 'bold',
+    marginRight: 5,
   },
   verseText: {
-    flex: 1,             
+    flex: 1,
   },
   chapterPicker: {
     marginTop: 10,
-    maxHeight: 50,
+    maxHeight: 30,
   },
   chapterPickerContent: {
     paddingHorizontal: 10,
@@ -119,5 +146,8 @@ const styles = StyleSheet.create({
   selectedChapterItem: {
     borderBottomWidth: 2,
     borderBottomColor: 'blue',
+  },
+  favoriteVerse: {
+    backgroundColor: '#f0f0ff',
   },
 });
