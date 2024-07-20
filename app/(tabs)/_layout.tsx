@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { Link, Tabs } from 'expo-router';
 import { Pressable } from 'react-native';
@@ -6,6 +6,7 @@ import { Pressable } from 'react-native';
 import Colors from '@/constants/Colors';
 import { useColorScheme } from '@/components/useColorScheme';
 import { useClientOnlyValue } from '@/components/useClientOnlyValue';
+import useStore from '../store/store';
 
 function TabBarIcon(props: {
   name: React.ComponentProps<typeof FontAwesome>['name'];
@@ -15,7 +16,25 @@ function TabBarIcon(props: {
 }
 
 export default function TabLayout() {
-  const colorScheme = useColorScheme();
+  const { theme, setTheme, activeTab, setActiveTab } = useStore();
+  const systemColorScheme = useColorScheme();
+
+  useEffect(() => {
+    console.log('TabLayout: Tema actual', theme);
+  }, [theme]);
+
+  useEffect(() => {
+    if (systemColorScheme) {
+      console.log('TabLayout: Cambiando tema basado en el sistema', systemColorScheme);
+      setTheme(systemColorScheme);
+    }
+  }, [systemColorScheme, setTheme]);
+
+  useEffect(() => {
+    console.log('TabLayout: Tab activa', activeTab);
+  }, [activeTab]);
+
+  const colorScheme = theme;
 
   return (
     <Tabs
@@ -23,9 +42,14 @@ export default function TabLayout() {
         tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
         headerShown: useClientOnlyValue(false, true),
       }}
+      screenListeners={{
+        tabPress: (e) => {
+          const tabName = e.target?.split('/').pop() || '';
+          console.log('TabLayout: Cambiando a tab', tabName);
+          setActiveTab(tabName);
+        },
+      }}
     >
-
-      
       <Tabs.Screen
         name="index"
         options={{
@@ -68,22 +92,19 @@ export default function TabLayout() {
             </Link>
           ),
         }}
-        
-
-        
       />
       <Tabs.Screen
         name="modulos"
         options={{
           title: 'Módulos',
-          tabBarIcon: ({ color }) => <TabBarIcon name="th-large" color={color} />, // th-large es el ícono de FontAwesome para módulos
+          tabBarIcon: ({ color }) => <TabBarIcon name="th-large" color={color} />,
         }}
       />
-         <Tabs.Screen
+      <Tabs.Screen
         name="profile"
         options={{
           title: 'Profile',
-          tabBarIcon: ({ color }) => <TabBarIcon name="send" color={color} />, // th-large es el ícono de FontAwesome para módulos
+          tabBarIcon: ({ color }) => <TabBarIcon name="send" color={color} />,
         }}
       />
     </Tabs>

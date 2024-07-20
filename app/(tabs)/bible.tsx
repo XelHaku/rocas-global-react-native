@@ -1,14 +1,20 @@
-// app(tabs)/bible.tsx
-import React, { useRef, useState } from 'react';
+import React, { useRef } from 'react';
 import { StyleSheet, ScrollView, View, Text, TouchableOpacity } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import { bibliaRV1960 } from '@/constants/bibliaRV1960';
 import { bibliaContent } from '@/constants/bibliaContent';
+import useStore from '../store/store';
 
 export default function Bible() {
-  const [selectedBook, setSelectedBook] = useState(bibliaRV1960[0].archivo);
-  const [selectedChapter, setSelectedChapter] = useState(1);
-  const [favoriteVerses, setFavoriteVerses] = useState<string[]>([]);
+  const { 
+    selectedBook, 
+    selectedChapter, 
+    favoriteVerses, 
+    setSelectedBook, 
+    setSelectedChapter, 
+    toggleFavoriteVerse 
+  } = useStore();
+  
   const scrollViewRef = useRef<ScrollView>(null);
 
   const bookContent = bibliaContent[selectedBook as keyof typeof bibliaContent] || [];
@@ -22,25 +28,12 @@ export default function Bible() {
     });
   };
 
-  const toggleFavorite = (verseText: string) => {
-    setFavoriteVerses(prevFavorites => {
-      if (prevFavorites.includes(verseText)) {
-        return prevFavorites.filter(v => v !== verseText);
-      } else {
-        return [...prevFavorites, verseText];
-      }
-    });
-  };
-
   return (
     <View style={styles.container}>
       <Picker
         selectedValue={selectedBook}
         style={styles.picker}
-        onValueChange={(itemValue) => {
-          setSelectedBook(itemValue);
-          setSelectedChapter(1);
-        }}
+        onValueChange={(itemValue) => setSelectedBook(itemValue)}
       >
         {bibliaRV1960.map((book) => (
           <Picker.Item key={book.archivo} label={book.nombre} value={book.archivo} />
@@ -76,7 +69,7 @@ export default function Bible() {
 
       <ScrollView style={styles.contentContainer}>
         {chapterContent.map((verse, index) => (
-          <TouchableOpacity key={index} onPress={() => toggleFavorite(verse)}>
+          <TouchableOpacity key={index} onPress={() => toggleFavoriteVerse(verse)}>
             <View style={[
               styles.verse, 
               favoriteVerses.includes(verse) && styles.favoriteVerse

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { StyleSheet, TouchableOpacity } from 'react-native';
 import { Text, View } from '@/components/Themed';
 import useStore from '../store/store';
@@ -6,9 +6,14 @@ import useStore from '../store/store';
 export default function Biblia() {
   const { theme, setTheme } = useStore();
 
+  useEffect(() => {
+    console.log('Biblia: Tema actual', theme);
+  }, [theme]);
+
   const isDarkTheme = theme === 'dark';
 
   const toggleTheme = () => {
+    console.log('Biblia: Intentando cambiar el tema');
     setTheme(isDarkTheme ? 'light' : 'dark');
   };
 
@@ -40,7 +45,6 @@ export default function Biblia() {
     </View>
   );
 }
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,

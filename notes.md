@@ -71,3 +71,12 @@ Esta estructura te permitirá tener una aplicación modular y escalable, facilit
 
 
 https://docs.expo.dev/versions/latest/sdk/speech/#speechoptions
+
+
+<!-- API REFERECES WITH OPEN AI -->
+"https://platform.openai.com/docs/api-reference
+language
+string
+
+Optional
+The language of the input audio. Supplying the input language in ISO-639-1 format will improve accuracy and latency."
