@@ -41,9 +41,9 @@ export default function Bible() {
         ))}
       </Picker> */}
 
-<ChapterModal book='Genesís' chapter={3}>
-
-</ChapterModal>
+{/* <ChapterModal>
+  
+</ChapterModal> */}
       <ScrollView
         ref={scrollViewRef}
         horizontal
