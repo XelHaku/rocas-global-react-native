@@ -38,7 +38,7 @@ export async function getChapterSummary(
       throw new Error(`HTTP error! status: ${response.status}`);
     }
 
-    const data = await response.json();
+    const data: any = await response.json();
     const result = data.choices[0].message.content;
     const parsedResult = JSON.parse(result) as SummaryResponse;
 
