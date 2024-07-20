@@ -18,7 +18,9 @@ export async function getChapterSummary(
     throw new Error('OpenAI API key is not set');
   }
 
-  const content = `Dame un resumen del capítulo ${chapter} del libro ${book} y sus enseñanzas según el apóstol Guillermo Maldonado. Estructura tu respuesta en dos partes: 1) Resumen y 2) Enseñanzas.`;
+  const bookName = book.replace('.json', '');
+
+  const content = `Dame un resumen del capítulo ${chapter} del libro ${bookName} y sus enseñanzas según el apóstol Guillermo Maldonado. Estructura tu respuesta en dos partes: 1) Resumen y 2) Enseñanzas.`;
 
   try {
     const response = await fetch('https://api.openai.com/v1/chat/completions', {

@@ -4,6 +4,7 @@ import { Picker } from '@react-native-picker/picker';
 import { bibliaRV1960 } from '@/constants/bibliaRV1960';
 import { bibliaContent } from '@/constants/bibliaContent';
 import useAppStore from '../store/store';
+import ChapterModal from '../ChapterModal';
 
 export default function Bible() {
   const { 
@@ -30,15 +31,6 @@ export default function Bible() {
 
   return (
     <View style={styles.container}>
-      {/* <Picker
-        selectedValue={selectedBook}
-        style={styles.picker}
-        onValueChange={(itemValue) => setSelectedBook(itemValue)}
-      >
-        {bibliaRV1960.map((book) => (
-          <Picker.Item key={book.archivo} label={book.nombre} value={book.archivo} />
-        ))}
-      </Picker> */}
 
 
       <ScrollView
