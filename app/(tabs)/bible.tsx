@@ -4,6 +4,7 @@ import { Picker } from '@react-native-picker/picker';
 import { bibliaRV1960 } from '@/constants/bibliaRV1960';
 import { bibliaContent } from '@/constants/bibliaContent';
 import useStore from '../store/store';
+import ChapterModal from '@/components/ChapterModal';
 
 export default function Bible() {
   const { 
@@ -40,6 +41,9 @@ export default function Bible() {
         ))}
       </Picker> */}
 
+<ChapterModal book='Genesís' chapter={3}>
+
+</ChapterModal>
       <ScrollView
         ref={scrollViewRef}
         horizontal

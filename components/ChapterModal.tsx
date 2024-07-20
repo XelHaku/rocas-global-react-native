@@ -1,38 +1,26 @@
-
-
 import React, { useState, useEffect } from 'react';
 import { StatusBar } from 'expo-status-bar';
-import { Platform, StyleSheet, ActivityIndicator } from 'react-native';
+import { Platform, StyleSheet, ActivityIndicator, ScrollView } from 'react-native';
 import { Text, View } from "@/components/Themed";
+import { getChapterSummary } from '@/utils/openai/getChapterSummary';
 
 export default function ChapterModal({ book = 'Génesis', chapter = 3 }) {
-  const [summary, setSummary] = useState('');
+  const [summary, setSummary] = useState<any>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetchSummary();
-  }, [book, chapter]);
-
-  const fetchSummary = async () => {
     setLoading(true);
-    try {
-      // Aquí deberías reemplazar 'TU_API_URL' con la URL real de tu API GPT
-      const response = await fetch('TU_API_URL', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ book, chapter }),
+    getChapterSummary(book, chapter)
+      .then((result) => {
+        setSummary(result);
+        setLoading(false);
+      })
+      .catch((error) => {
+        console.error("Error fetching summary:", error);
+        setSummary(null);
+        setLoading(false);
       });
-      const data = await response.json();
-      setSummary(data.summary);
-    } catch (error) {
-      console.error('Error fetching summary:', error);
-      setSummary('Error al cargar el resumen. Por favor, intenta de nuevo.');
-    } finally {
-      setLoading(false);
-    }
-  };
+  }, [book, chapter]);
 
   return (
     <View style={styles.container}>
@@ -44,8 +32,15 @@ export default function ChapterModal({ book = 'Génesis', chapter = 3 }) {
       />
       {loading ? (
         <ActivityIndicator size="large" color="#0000ff" />
+      ) : summary ? (
+        <ScrollView style={styles.scrollView}>
+          <Text style={styles.sectionTitle}>Resumen:</Text>
+          <Text style={styles.summary}>{summary.abstract}</Text>
+          <Text style={styles.sectionTitle}>Enseñanzas:</Text>
+          <Text style={styles.summary}>{summary.teaching}</Text>
+        </ScrollView>
       ) : (
-        <Text style={styles.summary}>{summary}</Text>
+        <Text style={styles.errorText}>Error al cargar el resumen. Por favor, intente de nuevo.</Text>
       )}
       <StatusBar style={Platform.OS === "ios" ? "light" : "auto"} />
     </View>
@@ -69,8 +64,23 @@ const styles = StyleSheet.create({
     height: 1,
     width: '80%',
   },
+  scrollView: {
+    width: '100%',
+  },
+  sectionTitle: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    marginTop: 10,
+    marginBottom: 5,
+  },
   summary: {
     fontSize: 16,
+    textAlign: 'left',
+    marginBottom: 15,
+  },
+  errorText: {
+    fontSize: 16,
+    color: 'red',
     textAlign: 'center',
   },
 });

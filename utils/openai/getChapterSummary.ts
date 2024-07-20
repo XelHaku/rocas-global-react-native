@@ -1,4 +1,4 @@
-import axios from 'axios';
+import fetch from 'node-fetch';
 
 interface SummaryResponse {
   abstract: string;
@@ -19,24 +19,27 @@ export async function getChapterSummary(
   const content = `dame un resumen del capitulo ${chapter} y libro ${book} y sus enseñanzas segun el apostol guillermo maldonado`;
 
   try {
-    const response = await axios.post(
-      'https://api.openai.com/v1/chat/completions',
-      {
+    const response = await fetch('https://api.openai.com/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${apiKey}`
+      },
+      body: JSON.stringify({
         model: 'gpt-4o-mini',
         messages: [{ role: 'user', content }],
         temperature: 0.7,
         max_tokens: (abstractWordCount + teachingWordCount) * 2, // Aproximación de tokens
         response_format: { type: 'json_object' }
-      },
-      {
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${apiKey}`
-        }
-      }
-    );
+      })
+    });
 
-    const result = response.data.choices[0].message.content;
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const data = await response.json();
+    const result = data.choices[0].message.content;
     const parsedResult = JSON.parse(result) as SummaryResponse;
 
     // Asegurarse de que el resumen y las enseñanzas no excedan el límite de palabras
