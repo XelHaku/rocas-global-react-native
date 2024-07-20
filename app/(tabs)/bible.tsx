@@ -30,7 +30,7 @@ export default function Bible() {
 
   return (
     <View style={styles.container}>
-      <Picker
+      {/* <Picker
         selectedValue={selectedBook}
         style={styles.picker}
         onValueChange={(itemValue) => setSelectedBook(itemValue)}
@@ -38,7 +38,7 @@ export default function Bible() {
         {bibliaRV1960.map((book) => (
           <Picker.Item key={book.archivo} label={book.nombre} value={book.archivo} />
         ))}
-      </Picker>
+      </Picker> */}
 
       <ScrollView
         ref={scrollViewRef}
