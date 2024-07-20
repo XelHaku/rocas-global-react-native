@@ -1,15 +1,42 @@
-import { StyleSheet } from 'react-native';
-
-import EditScreenInfo from '@/components/EditScreenInfo';
-import { Text, View } from '@/components/Themed';
 import React from 'react';
+import { StyleSheet, TouchableOpacity } from 'react-native';
+import { Text, View } from '@/components/Themed';
+import useStore from '../store/store';
 
 export default function Biblia() {
+  const { theme, setTheme } = useStore();
+
+  const isDarkTheme = theme === 'dark';
+
+  const toggleTheme = () => {
+    setTheme(isDarkTheme ? 'light' : 'dark');
+  };
+
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Tab Two</Text>
-      <View style={styles.separator} lightColor="#eee" darkColor="rgba(255,255,255,0.1)" />
-      <EditScreenInfo path="app/(tabs)/two.tsx" />
+    <View
+      style={[
+        styles.container,
+        isDarkTheme
+          ? { backgroundColor: 'black' }
+          : { backgroundColor: 'white' },
+      ]}
+    >
+      <Text style={[styles.text, isDarkTheme ? { color: 'white' } : { color: 'black' }]}>
+        This is demo of default dark/light theme using appearance.{' '}
+      </Text>
+      <TouchableOpacity
+        style={[
+          styles.button,
+          isDarkTheme
+            ? { backgroundColor: 'white' }
+            : { backgroundColor: 'black' },
+        ]}
+        onPress={toggleTheme}
+      >
+        <Text style={[styles.buttonText, { color: isDarkTheme ? 'black' : 'white' }]}>
+          Cambiar tema
+        </Text>
+      </TouchableOpacity>
     </View>
   );
 }
@@ -20,13 +47,16 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  title: {
-    fontSize: 20,
-    fontWeight: 'bold',
+  text: {
+    fontSize: 16,
+    marginBottom: 20,
   },
-  separator: {
-    marginVertical: 30,
-    height: 1,
-    width: '80%',
+  button: {
+    padding: 10,
+    borderRadius: 5,
+  },
+  buttonText: {
+    fontSize: 16,
+    fontWeight: 'bold',
   },
 });

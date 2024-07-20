@@ -9,20 +9,17 @@ import 'react-native-reanimated';
 import { useColorScheme } from '@/components/useColorScheme';
 import React from 'react';
 
-// Importar los componentes de react-native-paper
-import { Provider as PaperProvider, MD3LightTheme, MD3DarkTheme } from 'react-native-paper';
+import { Provider as PaperProvider, MD3LightTheme, MD3DarkTheme, MD3Theme } from 'react-native-paper';
+import useStore from './store/store';
 
 export {
-  // Catch any errors thrown by the Layout component.
   ErrorBoundary,
 } from 'expo-router';
 
 export const unstable_settings = {
-  // Ensure that reloading on `/modal` keeps a back button present.
   initialRouteName: '(tabs)',
 };
 
-// Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
@@ -31,7 +28,6 @@ export default function RootLayout() {
     ...FontAwesome.font,
   });
 
-  // Expo Router uses Error Boundaries to catch errors in the navigation tree.
   useEffect(() => {
     if (error) throw error;
   }, [error]);
@@ -51,12 +47,17 @@ export default function RootLayout() {
 
 function RootLayoutNav() {
   const colorScheme = useColorScheme();
-  const paperTheme = colorScheme === 'dark' ? MD3DarkTheme : MD3LightTheme;
+  const { theme, setTheme } = useStore();
+
+  useEffect(() => {
+    setTheme(colorScheme as 'light' | 'dark');
+  }, [colorScheme, setTheme]);
+
+  const paperTheme: MD3Theme = theme === 'dark' ? MD3DarkTheme : MD3LightTheme;
 
   return (
-    // Envolver la navegación con PaperProvider para proporcionar el tema
     <PaperProvider theme={paperTheme}>
-      <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
+      <ThemeProvider value={theme === "dark" ? DarkTheme : DefaultTheme}>
         <Stack>
           <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
           <Stack.Screen name="modal" options={{ presentation: "modal" }} />
@@ -65,7 +66,6 @@ function RootLayoutNav() {
     </PaperProvider>
   );
 }
-
 
 // // TODO: <PrivyProvider config >
 //     // TODO: <wagmi Provider config >
