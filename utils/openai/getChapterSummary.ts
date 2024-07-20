@@ -1,4 +1,3 @@
-import fetch from 'node-fetch';
 
 interface SummaryResponse {
   abstract: string;
@@ -29,7 +28,7 @@ export async function getChapterSummary(
         model: 'gpt-4o-mini',
         messages: [{ role: 'user', content }],
         temperature: 0.7,
-        max_tokens: (abstractWordCount + teachingWordCount) * 2, // Aproximación de tokens
+        max_tokens: (abstractWordCount + teachingWordCount) * 2,
         response_format: { type: 'json_object' }
       })
     });
@@ -38,7 +37,7 @@ export async function getChapterSummary(
       throw new Error(`HTTP error! status: ${response.status}`);
     }
 
-    const data: any = await response.json();
+    const data = await response.json();
     const result = data.choices[0].message.content;
     const parsedResult = JSON.parse(result) as SummaryResponse;
 
@@ -52,7 +51,6 @@ export async function getChapterSummary(
     throw error;
   }
 }
-
 function limitWords(text: string, limit: number): string {
   const words = text.split(' ');
   if (words.length <= limit) return text;
