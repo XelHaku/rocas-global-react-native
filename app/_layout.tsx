@@ -9,6 +9,9 @@ import 'react-native-reanimated';
 import { useColorScheme } from '@/components/useColorScheme';
 import React from 'react';
 
+// Importar los componentes de react-native-paper
+import { Provider as PaperProvider, MD3LightTheme, MD3DarkTheme } from 'react-native-paper';
+
 export {
   // Catch any errors thrown by the Layout component.
   ErrorBoundary,
@@ -48,17 +51,29 @@ export default function RootLayout() {
 
 function RootLayoutNav() {
   const colorScheme = useColorScheme();
+  const paperTheme = colorScheme === 'dark' ? MD3DarkTheme : MD3LightTheme;
 
   return (
-    // TODO: <PrivyProvider config >
-    // TODO: <wagmi Provider config >
-    <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
-      <Stack>
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="modal" options={{ presentation: "modal" }} />
-      </Stack>
-    </ThemeProvider>
-    // TODO: </wagmi>
-    // TODO: </PrivyProvider>
+    // Envolver la navegación con PaperProvider para proporcionar el tema
+    <PaperProvider theme={paperTheme}>
+      <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
+        <Stack>
+          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+          <Stack.Screen name="modal" options={{ presentation: "modal" }} />
+        </Stack>
+      </ThemeProvider>
+    </PaperProvider>
   );
 }
+
+
+// // TODO: <PrivyProvider config >
+//     // TODO: <wagmi Provider config >
+//     <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
+//       <Stack>
+//         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+//         <Stack.Screen name="modal" options={{ presentation: "modal" }} />
+//       </Stack>
+//     </ThemeProvider>
+//     // TODO: </wagmi>
+//     // TODO: </PrivyProvider>

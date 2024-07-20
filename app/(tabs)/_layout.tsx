@@ -63,7 +63,7 @@ export default function TabLayout() {
         name="profile"
         options={{
           title: 'Profile',
-          tabBarIcon: ({ color }) => <TabBarIcon name="person" color={color} />, // th-large es el ícono de FontAwesome para módulos
+          tabBarIcon: ({ color }) => <TabBarIcon name="send" color={color} />, // th-large es el ícono de FontAwesome para módulos
         }}
       />
     </Tabs>
