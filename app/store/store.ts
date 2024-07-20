@@ -19,7 +19,7 @@ interface AppStore extends BibleState {
   toggleFavoriteVerse: (verse: string) => void;
 }
 
-const useStore = create<AppStore>((set) => ({
+const useAppStore = create<AppStore>((set) => ({
   theme: 'light',
   setTheme: (theme) => {
     console.log('Zustand: Cambiando tema a', theme);
@@ -42,4 +42,4 @@ const useStore = create<AppStore>((set) => ({
   })),
 }))
 
-export default useStore
+export default useAppStore

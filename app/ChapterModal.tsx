@@ -3,14 +3,18 @@ import { StatusBar } from 'expo-status-bar';
 import { Platform, StyleSheet, ActivityIndicator, ScrollView } from 'react-native';
 import { Text, View } from "@/components/Themed";
 import { getChapterSummary } from '@/utils/openai/getChapterSummary';
+import useAppStore from './store/store';
 
-export default function ChapterModal({ book = 'Génesis', chapter = 3 }) {
+export default function ChapterModal() {
   const [summary, setSummary] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  
+  const selectedBook = useAppStore((state) => state.selectedBook);
+  const selectedChapter = useAppStore((state) => state.selectedChapter);
 
   useEffect(() => {
     setLoading(true);
-    getChapterSummary(book, chapter)
+    getChapterSummary(selectedBook, selectedChapter)
       .then((result) => {
         setSummary(result);
         setLoading(false);
@@ -20,11 +24,11 @@ export default function ChapterModal({ book = 'Génesis', chapter = 3 }) {
         setSummary(null);
         setLoading(false);
       });
-  }, [book, chapter]);
+  }, [selectedBook, selectedChapter]);
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>{`${book} - Capítulo ${chapter}`}</Text>
+      <Text style={styles.title}>{`${selectedBook} - Capítulo ${selectedChapter}`}</Text>
       <View
         style={styles.separator}
         lightColor="#eee"

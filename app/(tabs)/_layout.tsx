@@ -6,6 +6,9 @@ import { Pressable } from 'react-native';
 import Colors from '@/constants/Colors';
 import { useColorScheme } from '@/components/useColorScheme';
 import { useClientOnlyValue } from '@/components/useClientOnlyValue';
+import useAppStore from '../store/store';
+import { Picker } from '@react-native-picker/picker';
+import { bibliaRV1960 } from '@/constants/bibliaRV1960';
 
 function TabBarIcon(props: {
   name: React.ComponentProps<typeof FontAwesome>['name'];
@@ -13,9 +16,26 @@ function TabBarIcon(props: {
 }) {
   return <FontAwesome size={28} style={{ marginBottom: -3 }} {...props} />;
 }
+function BookSelector() {
+  const { selectedBook, setSelectedBook } = useAppStore();
+  const colorScheme = useColorScheme();
 
+  return (
+    <Picker
+      selectedValue={selectedBook}
+      // style={styles.picker}
+      onValueChange={(itemValue) => setSelectedBook(itemValue)}
+      dropdownIconColor={Colors[colorScheme ?? 'light'].text}
+    >
+      {bibliaRV1960.map((book) => (
+        <Picker.Item key={book.archivo} label={book.nombre} value={book.archivo} />
+      ))}
+    </Picker>
+  );
+}
 export default function TabLayout() {
   const colorScheme = useColorScheme();
+  const { theme, setTheme, activeTab, setActiveTab, selectedBook } = useAppStore();
 
   return (
     <Tabs

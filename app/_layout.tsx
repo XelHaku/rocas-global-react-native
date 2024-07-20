@@ -10,7 +10,7 @@ import { useColorScheme } from '@/components/useColorScheme';
 import React from 'react';
 
 import { Provider as PaperProvider, MD3LightTheme, MD3DarkTheme, MD3Theme } from 'react-native-paper';
-import useStore from './store/store';
+import useAppStore from './store/store';
 
 export {
   ErrorBoundary,
@@ -47,7 +47,7 @@ export default function RootLayout() {
 
 function RootLayoutNav() {
   const colorScheme = useColorScheme();
-  const { theme, setTheme } = useStore();
+  const { theme, setTheme } = useAppStore();
 
   useEffect(() => {
     setTheme(colorScheme as 'light' | 'dark');

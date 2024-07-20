@@ -3,8 +3,7 @@ import { StyleSheet, ScrollView, View, Text, TouchableOpacity } from 'react-nati
 import { Picker } from '@react-native-picker/picker';
 import { bibliaRV1960 } from '@/constants/bibliaRV1960';
 import { bibliaContent } from '@/constants/bibliaContent';
-import useStore from '../store/store';
-import ChapterModal from '@/components/ChapterModal';
+import useAppStore from '../store/store';
 
 export default function Bible() {
   const { 
@@ -14,7 +13,7 @@ export default function Bible() {
     setSelectedBook, 
     setSelectedChapter, 
     toggleFavoriteVerse 
-  } = useStore();
+  } = useAppStore();
   
   const scrollViewRef = useRef<ScrollView>(null);
 
@@ -41,9 +40,7 @@ export default function Bible() {
         ))}
       </Picker> */}
 
-{/* <ChapterModal>
-  
-</ChapterModal> */}
+
       <ScrollView
         ref={scrollViewRef}
         horizontal

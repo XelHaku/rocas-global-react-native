@@ -1,10 +1,10 @@
 import React, { useEffect } from 'react';
 import { StyleSheet, TouchableOpacity } from 'react-native';
 import { Text, View } from '@/components/Themed';
-import useStore from '../store/store';
+import useAppStore from '../store/store';
 
 export default function Biblia() {
-  const { theme, setTheme } = useStore();
+  const { theme, setTheme } = useAppStore();
 
   useEffect(() => {
     console.log('Biblia: Tema actual', theme);
