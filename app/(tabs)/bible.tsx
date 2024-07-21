@@ -1,10 +1,11 @@
-import React, { useRef } from 'react';
-import { StyleSheet, ScrollView, View, Text, TouchableOpacity } from 'react-native';
+import React, { useRef, useState } from 'react';
+import { StyleSheet, ScrollView, View, Text, TouchableOpacity, Button } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import { bibliaRV1960 } from '@/constants/bibliaRV1960';
 import { bibliaContent } from '@/constants/bibliaContent';
 import useAppStore from '../store/store';
 import ChapterModal from '../ChapterModal';
+import * as Speech from 'expo-speech';
 
 export default function Bible() {
   const { 
@@ -15,7 +16,7 @@ export default function Bible() {
     setSelectedChapter, 
     toggleFavoriteVerse 
   } = useAppStore();
-  
+  const [isSpeaking, setIsSpeaking] = useState(false);
   const scrollViewRef = useRef<ScrollView>(null);
 
   const bookContent = bibliaContent[selectedBook as keyof typeof bibliaContent] || [];
@@ -29,9 +30,28 @@ export default function Bible() {
     });
   };
 
+  const speakContent = () => {
+    const content = chapterContent.join(' ');
+    if (isSpeaking) {
+      Speech.stop();
+      setIsSpeaking(false);
+    } else {
+      setIsSpeaking(true);
+      Speech.speak(content, {
+        language: "es-LA",
+        pitch: 1.2,
+        rate: 0.8,
+        onDone: () => setIsSpeaking(false),
+      });
+    }
+  };
+
   return (
     <View style={styles.container}>
-
+      <Button 
+        title={isSpeaking ? "Detener lectura" : "Leer capítulo"} 
+        onPress={speakContent} 
+      />
 
       <ScrollView
         ref={scrollViewRef}
@@ -76,6 +96,8 @@ export default function Bible() {
     </View>
   );
 }
+
+// ... (el resto del código, incluyendo los estilos, permanece igual)
 
 const ITEM_WIDTH = 50;
 
