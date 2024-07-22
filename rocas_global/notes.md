@@ -84,3 +84,9 @@ The language of the input audio. Supplying the input language in ISO-639-1 forma
 
 https://docs.expo.dev/build/setup/
 npm install -g eas-cli
+
+generate apk
+eas build --profile development --platform android
+
+generate abb
+eas build
