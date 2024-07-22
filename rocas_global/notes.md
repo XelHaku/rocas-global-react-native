@@ -86,7 +86,7 @@ https://docs.expo.dev/build/setup/
 npm install -g eas-cli
 
 generate apk
-eas build --profile development --platform android
+eas build --debug development --platform android
 
 generate abb
 eas build
