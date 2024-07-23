@@ -9,7 +9,6 @@ import 'react-native-reanimated';
 import { useColorScheme } from '@/components/useColorScheme';
 import React from 'react';
 
-import { Provider as PaperProvider, MD3LightTheme, MD3DarkTheme, MD3Theme } from 'react-native-paper';
 import useAppStore from './store/store';
 
 export {
@@ -53,17 +52,14 @@ function RootLayoutNav() {
     setTheme(colorScheme as 'light' | 'dark');
   }, [colorScheme, setTheme]);
 
-  const paperTheme: MD3Theme = theme === 'dark' ? MD3DarkTheme : MD3LightTheme;
 
   return (
-    <PaperProvider theme={paperTheme}>
       <ThemeProvider value={theme === "dark" ? DarkTheme : DefaultTheme}>
         <Stack>
           <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
           <Stack.Screen name="modal" options={{ presentation: "modal" }} />
         </Stack>
       </ThemeProvider>
-    </PaperProvider>
   );
 }
 

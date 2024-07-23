@@ -36,6 +36,9 @@
     "extra": {
       "router": {
         "origin": false
+      },
+      "eas": {
+        "projectId": "619177fa-af75-46d6-b6f6-47581140b4be"
       }
     },
     "owner": "nuevo_creyente1"
