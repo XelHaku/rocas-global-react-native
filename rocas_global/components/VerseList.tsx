@@ -1,7 +1,7 @@
 // components/VerseList.js
 import React from "react";
 import { View, FlatList } from "react-native";
-import { Bible } from "../json/biblia";
+import { Bible } from "../../rocas-global/json/biblia";
 import VerseItem from "./VerseItem";
 
 const VerseList = ({ route }) => {
