@@ -87,16 +87,16 @@ npm install -g eas-cli
 
 generate apk
 Para un APK de desarrollo:
-Copyeas build --profile development --platform android
+eas build --profile development --platform android
 
 Para un APK de preview:
-Copyeas build --profile preview --platform android
+eas build --profile preview --platform android
 
 Para un APK de release usando Gradle directamente:
-Copyeas build --profile preview2 --platform android
+eas build --profile preview2 --platform android
 
 Para un build con cliente de desarrollo:
-Copyeas build --profile preview3 --platform android
+eas build --profile preview3 --platform android
 
 Para un build de producción (configuración pendiente):
-Copyeas build --profile production --platform android
+eas build --profile production --platform android
