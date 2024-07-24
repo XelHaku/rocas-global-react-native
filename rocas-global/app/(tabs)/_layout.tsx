@@ -1,13 +1,12 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { Link, Tabs } from 'expo-router';
-import { Pressable, View, Text, TouchableOpacity } from 'react-native';
+import { Pressable, View, Text, TouchableOpacity, ScrollView, Modal } from 'react-native';
 import { StyleSheet } from 'react-native';
 import Colors from '@/constants/Colors';
 import { useColorScheme } from '@/components/useColorScheme';
 import { useClientOnlyValue } from '@/components/useClientOnlyValue';
 import useAppStore from '@/store/store';
-import { Picker } from '@react-native-picker/picker';
 import { bibliaRV1960 } from '@/constants/bibliaRV1960';
 import { useTheme } from '@react-navigation/native';
 
@@ -20,15 +19,22 @@ function TabBarIcon(props: {
 
 function BookSelector() {
   const { selectedBook, setSelectedBook } = useAppStore();
-  const colorScheme = useColorScheme();
-  const [isPickerVisible, setIsPickerVisible] = useState(false);
   const { colors } = useTheme();
+  const [isListVisible, setIsListVisible] = useState(false);
+  const scrollViewRef = useRef<ScrollView>(null);
 
   const selectedBookName = bibliaRV1960.find(book => book.archivo === selectedBook)?.nombre || 'Seleccionar Libro';
 
+  useEffect(() => {
+    if (isListVisible && scrollViewRef.current) {
+      const index = bibliaRV1960.findIndex(book => book.archivo === selectedBook);
+      scrollViewRef.current.scrollTo({ y: index * 40, animated: false });
+    }
+  }, [isListVisible, selectedBook]);
+
   return (
     <View style={styles.bookSelectorContainer}>
-      <TouchableOpacity onPress={() => setIsPickerVisible(!isPickerVisible)} style={styles.bookSelectorButton}>
+      <TouchableOpacity onPress={() => setIsListVisible(true)} style={styles.bookSelectorButton}>
         <FontAwesome 
           name="book" 
           size={20} 
@@ -36,24 +42,45 @@ function BookSelector() {
           style={styles.bookIcon}
         />
         <Text style={[styles.selectedBookText, { color: colors.text }]}>{selectedBookName}</Text>
+        <FontAwesome 
+          name="chevron-down" 
+          size={16} 
+          color={colors.text}
+          style={styles.chevronIcon}
+        />
       </TouchableOpacity>
-      {isPickerVisible && (
-        <View style={[styles.pickerContainer, { backgroundColor: colors.card, borderColor: colors.border }]}>
-          <Picker
-            selectedValue={selectedBook}
-            style={[styles.picker, { color: colors.text }]}
-            onValueChange={(itemValue) => {
-              setSelectedBook(itemValue);
-              setIsPickerVisible(false);
-            }}
-            dropdownIconColor={colors.text}
-          >
-            {bibliaRV1960.map((book) => (
-              <Picker.Item key={book.archivo} label={book.nombre} value={book.archivo} color={colors.text} />
-            ))}
-          </Picker>
-        </View>
-      )}
+      <Modal
+        visible={isListVisible}
+        transparent={true}
+        animationType="fade"
+        onRequestClose={() => setIsListVisible(false)}
+      >
+        <TouchableOpacity 
+          style={styles.modalOverlay} 
+          activeOpacity={1} 
+          onPressOut={() => setIsListVisible(false)}
+        >
+          <View style={[styles.bookListContainer, { backgroundColor: colors.card }]}>
+            <ScrollView ref={scrollViewRef}>
+              {bibliaRV1960.map((book) => (
+                <TouchableOpacity
+                  key={book.archivo}
+                  style={[
+                    styles.bookItem,
+                    selectedBook === book.archivo && { backgroundColor: colors.primary }
+                  ]}
+                  onPress={() => {
+                    setSelectedBook(book.archivo);
+                    setIsListVisible(false);
+                  }}
+                >
+                  <Text style={[styles.bookItemText, { color: colors.text }]}>{book.nombre}</Text>
+                </TouchableOpacity>
+              ))}
+            </ScrollView>
+          </View>
+        </TouchableOpacity>
+      </Modal>
     </View>
   );
 }
@@ -138,6 +165,8 @@ export default function TabLayout() {
 const styles = StyleSheet.create({
   bookSelectorContainer: {
     position: 'relative',
+    flexDirection: 'row',
+    alignItems: 'center',
   },
   bookSelectorButton: {
     flexDirection: 'row',
@@ -149,17 +178,29 @@ const styles = StyleSheet.create({
   },
   selectedBookText: {
     fontSize: 16,
+    marginRight: 5,
   },
-  pickerContainer: {
-    position: 'absolute',
-    top: '100%',
-    left: 0,
-    right: 0,
-    borderRadius: 5,
-    borderWidth: 1,
-    zIndex: 1000,
+  chevronIcon: {
+    marginLeft: 5,
   },
-  picker: {
-    width: '100%',
+  modalOverlay: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  },
+  bookListContainer: {
+    width: '80%',
+    maxHeight: '80%',
+    borderRadius: 10,
+    padding: 10,
+  },
+  bookItem: {
+    padding: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: '#ccc',
+  },
+  bookItemText: {
+    fontSize: 16,
   },
 });
