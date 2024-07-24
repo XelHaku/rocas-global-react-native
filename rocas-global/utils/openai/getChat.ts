@@ -8,7 +8,7 @@ export async function getChat(userInput: string): Promise<string> {
     throw new Error('OpenAI API key is not set');
   }
 
-  const content = `Responde en español: ${userInput}`;
+  const content = `Responde en español y toda respuesta que este orientada a lo espiritual y a la biblia: ${userInput}`;
 
   try {
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
