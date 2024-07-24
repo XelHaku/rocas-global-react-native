@@ -1,5 +1,4 @@
 
-import Constants from 'expo-constants';
 
 interface SummaryResponse {
   abstract: string;
@@ -12,9 +11,8 @@ export async function getChapterSummary(
   abstractWordCount: number = 300,
   teachingWordCount: number = 200
 ): Promise<SummaryResponse> {
-  console.log("apikey", Constants.expoConfig);
-  const apiKey = '';
-
+  const apiKey = process.env.EXPO_PUBLIC_API_URL;
+  console.log('API Key:', apiKey);
   if (!apiKey) {
     throw new Error('OpenAI API key is not set');
   }
