@@ -17,22 +17,20 @@ interface AppStore extends BibleState {
   setSelectedBook: (book: string) => void;
   setSelectedChapter: (chapter: number) => void;
   toggleFavoriteVerse: (verse: string) => void;
+  textToRead: string; // New state for the text to read
+  setTextToRead: (text: string) => void; // New method to update the text to read
 }
 
 const useAppStore = create<AppStore>((set) => ({
   theme: 'light',
-  setTheme: (theme) => {
-    console.log('Zustand: Cambiando tema a', theme);
-    set({ theme })
-  },
+  setTheme: (theme) => set({ theme }),
   activeTab: 'index',
-  setActiveTab: (tab) => {
-    console.log('Zustand: Cambiando tab activa a', tab);
-    set({ activeTab: tab })
-  },
+  setActiveTab: (tab) => set({ activeTab: tab }),
   selectedBook: bibliaRV1960[0].archivo,
   selectedChapter: 1,
   favoriteVerses: [],
+  textToRead: '', // Initialize the textToRead state
+  setTextToRead: (text) => set({ textToRead: text }), // Implement the setTextToRead method
   setSelectedBook: (book) => set({ selectedBook: book, selectedChapter: 1 }),
   setSelectedChapter: (chapter) => set({ selectedChapter: chapter }),
   toggleFavoriteVerse: (verse) => set((state) => ({
@@ -40,6 +38,6 @@ const useAppStore = create<AppStore>((set) => ({
       ? state.favoriteVerses.filter(v => v !== verse)
       : [...state.favoriteVerses, verse]
   })),
-}))
+}));
 
-export default useAppStore
+export default useAppStore;
