@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { StyleSheet, View, Text, TouchableOpacity, FlatList, Dimensions, ScrollView, SafeAreaView, Platform, StatusBar } from 'react-native';
 import { bibliaContent } from '@/constants/bibliaContent';
 import useAppStore from '@/store/store';
@@ -7,7 +7,10 @@ import { useTheme } from '@react-navigation/native';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
-type Chapter = string[];
+let Tts: any;
+if (Platform.OS !== 'web') {
+  Tts = require('react-native-tts').default;
+}
 
 const getColors = (theme: 'light' | 'dark') => ({
   background: theme === 'light' ? '#FFF8E1' : '#1A1A1A',
@@ -26,13 +29,41 @@ export default function Bible() {
     favoriteVerses, 
     setSelectedChapter, 
     toggleFavoriteVerse,
-    setTextToRead // Add this to useAppStore
+    setTextToRead,
+    theme: appTheme,
+    ttsConfig,
   } = useAppStore();
 
-  const { colors, dark } = useTheme();
-  const customColors = getColors(dark ? 'dark' : 'light');
+  const [ttsAvailable, setTtsAvailable] = useState(false);
+  const [isPlaying, setIsPlaying] = useState(false);
+
+  const { colors } = useTheme();
+  const customColors = getColors(appTheme);
 
   const bookContent = bibliaContent[selectedBook as keyof typeof bibliaContent] || [];
+
+  useEffect(() => {
+    const initTts = async () => {
+      if (Platform.OS === 'web') {
+        setTtsAvailable('speechSynthesis' in window);
+      } else if (Tts) {
+        try {
+          await Tts.getInitStatus();
+          await Tts.setDefaultLanguage('es-ES');
+          setTtsAvailable(true);
+        } catch (err) {
+          console.error('Error initializing TTS:', err);
+          setTtsAvailable(false);
+        }
+      }
+    };
+
+    initTts();
+
+    return () => {
+      stopSpeech();
+    };
+  }, []);
 
   const handleChapterChange = useCallback((chapter: number) => {
     setSelectedChapter(chapter);
@@ -51,9 +82,61 @@ export default function Bible() {
     return null;
   }
 
+  const startSpeech = (text: string) => {
+    if (Platform.OS === 'web') {
+      if ('speechSynthesis' in window) {
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.lang = 'es-ES';
+        const selectedWebVoice = window.speechSynthesis.getVoices().find(
+          (voice, index) => `web-voice-${index}` === ttsConfig.selectedVoice
+        );
+        if (selectedWebVoice) {
+          utterance.voice = selectedWebVoice;
+        }
+        utterance.rate = ttsConfig.speechRate;
+        utterance.pitch = ttsConfig.speechPitch;
+        utterance.onend = () => setIsPlaying(false);
+        window.speechSynthesis.speak(utterance);
+        setIsPlaying(true);
+      } else {
+        console.log('Web Speech API is not supported in this browser');
+        alert('La síntesis de voz no está disponible en este navegador');
+      }
+    } else if (ttsAvailable && Tts) {
+      Tts.speak(text, {
+        androidParams: {
+          KEY_PARAM_STREAM: 'STREAM_MUSIC',
+          KEY_PARAM_VOLUME: 1,
+          KEY_PARAM_PAN: 0,
+        },
+      });
+      setIsPlaying(true);
+      Tts.addEventListener('tts-finish', () => setIsPlaying(false));
+    } else {
+      console.log('TTS is not available on this platform');
+      alert('La síntesis de voz no está disponible en esta plataforma');
+    }
+  };
+
+  const stopSpeech = () => {
+    if (Platform.OS === 'web') {
+      if ('speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+      }
+    } else if (Tts) {
+      Tts.stop();
+    }
+    setIsPlaying(false);
+  };
+
   const handleReadText = () => {
-    const text = bookContent[selectedChapter - 1].join(' ');
-    setTextToRead(text); // Set the text to be read
+    if (isPlaying) {
+      stopSpeech();
+    } else {
+      const text = bookContent[selectedChapter - 1].join('. ');
+      setTextToRead(text);
+      startSpeech(text);
+    }
   };
 
   return (
@@ -96,9 +179,13 @@ export default function Bible() {
           />
         </View>
 
-        {/* Add Button to Read Text */}
-        <TouchableOpacity style={styles.readButton} onPress={handleReadText}>
-          <Text style={styles.readButtonText}>Leer Texto</Text>
+        <TouchableOpacity 
+          style={[styles.readButton, isPlaying && styles.stopButton]}
+          onPress={handleReadText}
+        >
+          <Text style={styles.readButtonText}>
+            {isPlaying ? 'Detener' : 'Leer Texto'}
+          </Text>
         </TouchableOpacity>
       </SafeAreaView>
     </View>
@@ -190,6 +277,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderRadius: 5,
     margin: 10,
+  },
+  stopButton: {
+    backgroundColor: '#DC3545',
   },
   readButtonText: {
     color: '#FFFFFF',

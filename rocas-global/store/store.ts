@@ -9,6 +9,12 @@ interface BibleState {
   favoriteVerses: string[];
 }
 
+interface TtsConfig {
+  selectedVoice: string;
+  speechRate: number;
+  speechPitch: number;
+}
+
 interface AppStore extends BibleState {
   theme: Theme;
   setTheme: (theme: Theme) => void;
@@ -17,8 +23,10 @@ interface AppStore extends BibleState {
   setSelectedBook: (book: string) => void;
   setSelectedChapter: (chapter: number) => void;
   toggleFavoriteVerse: (verse: string) => void;
-  textToRead: string; // New state for the text to read
-  setTextToRead: (text: string) => void; // New method to update the text to read
+  textToRead: string;
+  setTextToRead: (text: string) => void;
+  ttsConfig: TtsConfig;
+  setTtsConfig: (config: Partial<TtsConfig>) => void;
 }
 
 const useAppStore = create<AppStore>((set) => ({
@@ -29,14 +37,22 @@ const useAppStore = create<AppStore>((set) => ({
   selectedBook: bibliaRV1960[0].archivo,
   selectedChapter: 1,
   favoriteVerses: [],
-  textToRead: '', // Initialize the textToRead state
-  setTextToRead: (text) => set({ textToRead: text }), // Implement the setTextToRead method
+  textToRead: '',
+  setTextToRead: (text) => set({ textToRead: text }),
   setSelectedBook: (book) => set({ selectedBook: book, selectedChapter: 1 }),
   setSelectedChapter: (chapter) => set({ selectedChapter: chapter }),
   toggleFavoriteVerse: (verse) => set((state) => ({
     favoriteVerses: state.favoriteVerses.includes(verse)
       ? state.favoriteVerses.filter(v => v !== verse)
       : [...state.favoriteVerses, verse]
+  })),
+  ttsConfig: {
+    selectedVoice: '',
+    speechRate: 0.5,
+    speechPitch: 1.0,
+  },
+  setTtsConfig: (config) => set((state) => ({
+    ttsConfig: { ...state.ttsConfig, ...config }
   })),
 }));
 
