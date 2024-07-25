@@ -64,7 +64,7 @@ export default function Bible() {
         try {
           await Tts.getInitStatus();
           await Tts.setDefaultLanguage('es-MX');
-          await Tts.setDefaultRate(0.8);
+          await Tts.setDefaultRate(1);
           await Tts.setDefaultPitch(0.6);
           setTtsAvailable(true);
         } catch (err) {
@@ -113,8 +113,8 @@ export default function Bible() {
       if ('speechSynthesis' in window) {
         const utterance = new SpeechSynthesisUtterance(fullText);
         utterance.lang = 'es-MX';
-        utterance.rate = 0.8;
-        utterance.pitch = 0.6;
+        utterance.rate = 1;
+        utterance.pitch = 0.8;
         utterance.onend = () => {
           setIsPlaying(false);
           goToNextChapter();
