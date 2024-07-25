@@ -1,5 +1,5 @@
-import { create } from 'zustand'
-import { bibliaRV1960 } from '@/constants/bibliaRV1960'
+import { create } from 'zustand';
+import { bibliaRV1960 } from '@/constants/bibliaRV1960';
 
 type Theme = 'light' | 'dark';
 
@@ -27,6 +27,8 @@ interface AppStore extends BibleState {
   setTextToRead: (text: string) => void;
   ttsConfig: TtsConfig;
   setTtsConfig: (config: Partial<TtsConfig>) => void;
+  isFirstLaunch: boolean;
+  setFirstLaunch: (firstLaunch: boolean) => void;
 }
 
 const useAppStore = create<AppStore>((set) => ({
@@ -54,6 +56,8 @@ const useAppStore = create<AppStore>((set) => ({
   setTtsConfig: (config) => set((state) => ({
     ttsConfig: { ...state.ttsConfig, ...config }
   })),
+  isFirstLaunch: true,
+  setFirstLaunch: (firstLaunch) => set({ isFirstLaunch: firstLaunch }),
 }));
 
 export default useAppStore;

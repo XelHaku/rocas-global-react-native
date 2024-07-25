@@ -9,7 +9,8 @@ import 'react-native-reanimated';
 import { useColorScheme } from '@/components/useColorScheme';
 import React from 'react';
 import useAppStore from '@/store/store';
-
+import Onboarding from '@/components/Onboarding'; // Importa el componente de Onboarding
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export {
   ErrorBoundary,
@@ -27,6 +28,8 @@ export default function RootLayout() {
     ...FontAwesome.font,
   });
 
+  const { isFirstLaunch, setFirstLaunch } = useAppStore();
+
   useEffect(() => {
     if (error) throw error;
   }, [error]);
@@ -37,7 +40,18 @@ export default function RootLayout() {
     }
   }, [loaded]);
 
-  if (!loaded) {
+  useEffect(() => {
+    AsyncStorage.getItem('alreadyLaunched').then((value) => {
+      if (value == null) {
+        AsyncStorage.setItem('alreadyLaunched', 'true');
+        setFirstLaunch(true);
+      } else {
+        setFirstLaunch(false);
+      }
+    });
+  }, [setFirstLaunch]);
+
+  if (!loaded || isFirstLaunch === undefined) {
     return null;
   }
 
@@ -46,19 +60,22 @@ export default function RootLayout() {
 
 function RootLayoutNav() {
   const colorScheme = useColorScheme();
-  const { theme, setTheme } = useAppStore();
+  const { theme, setTheme, isFirstLaunch, setFirstLaunch } = useAppStore();
 
   useEffect(() => {
     setTheme(colorScheme as 'light' | 'dark');
   }, [colorScheme, setTheme]);
 
+  if (isFirstLaunch) {
+    return <Onboarding onDone={() => setFirstLaunch(false)} />;
+  }
 
   return (
-      <ThemeProvider value={theme === "dark" ? DarkTheme : DefaultTheme}>
-        <Stack>
-          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-          <Stack.Screen name="modal" options={{ presentation: "modal" }} />
-        </Stack>
-      </ThemeProvider>
+    <ThemeProvider value={theme === "dark" ? DarkTheme : DefaultTheme}>
+      <Stack>
+        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+        <Stack.Screen name="modal" options={{ presentation: "modal" }} />
+      </Stack>
+    </ThemeProvider>
   );
 }

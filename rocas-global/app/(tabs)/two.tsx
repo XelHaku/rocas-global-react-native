@@ -15,6 +15,9 @@ interface Voice {
 
 export default function TabTwoScreen() {
   const { theme, setTheme, ttsConfig, setTtsConfig } = useAppStore();
+  console.log('Current theme:', theme);
+  console.log('Current TTS config:', ttsConfig);
+
   const [voices, setVoices] = useState<Voice[]>([]);
   const [isTtsInitialized, setIsTtsInitialized] = useState<boolean>(false);
   const [textToRead, setTextToRead] = useState<string>('');
@@ -32,6 +35,7 @@ export default function TabTwoScreen() {
             setVoices(processedVoices);
             if (processedVoices.length > 0 && !ttsConfig.selectedVoice) {
               setTtsConfig({ selectedVoice: processedVoices[0].id });
+              console.log('Setting initial TTS voice:', processedVoices[0].id);
             }
             setIsTtsInitialized(true);
           };
@@ -49,6 +53,7 @@ export default function TabTwoScreen() {
           setVoices(processedVoices);
           if (processedVoices.length > 0 && !ttsConfig.selectedVoice) {
             setTtsConfig({ selectedVoice: processedVoices[0].id });
+            console.log('Setting initial TTS voice:', processedVoices[0].id);
           }
           setIsTtsInitialized(true);
         } catch (error) {
@@ -65,15 +70,19 @@ export default function TabTwoScreen() {
       Tts.setDefaultVoice(ttsConfig.selectedVoice);
       Tts.setDefaultRate(ttsConfig.speechRate);
       Tts.setDefaultPitch(ttsConfig.speechPitch);
+      console.log('Updated TTS settings:', ttsConfig);
     }
   }, [isTtsInitialized, ttsConfig]);
 
   const toggleTheme = () => {
-    setTheme(theme === 'light' ? 'dark' : 'light');
+    const newTheme = theme === 'light' ? 'dark' : 'light';
+    setTheme(newTheme);
+    console.log('Theme changed to:', newTheme);
   };
 
   const handleReadText = () => {
     if (isTtsInitialized && textToRead) {
+      console.log('Reading text with current TTS config:', ttsConfig);
       if (Platform.OS === 'web') {
         const utterance = new SpeechSynthesisUtterance(textToRead);
         const selectedWebVoice = window.speechSynthesis.getVoices().find(
@@ -109,17 +118,7 @@ export default function TabTwoScreen() {
       </View>
 
       <View style={styles.ttsContainer}>
-        <TextInput
-          style={styles.textInput}
-          placeholder="Ingrese texto para leer"
-          value={textToRead}
-          onChangeText={setTextToRead}
-          multiline
-        />
-        <TouchableOpacity style={styles.button} onPress={handleReadText}>
-          <Text style={styles.buttonText}>Reproducir Texto</Text>
-        </TouchableOpacity>
-
+   
         <View style={styles.settingsContainer}>
           <Text style={styles.settingsTitle}>Configuración de Lectura:</Text>
 
@@ -127,7 +126,10 @@ export default function TabTwoScreen() {
             <Text style={styles.label}>Voz:</Text>
             <Picker
               selectedValue={ttsConfig.selectedVoice}
-              onValueChange={(itemValue: string) => setTtsConfig({ selectedVoice: itemValue })}
+              onValueChange={(itemValue: string) => {
+                setTtsConfig({ selectedVoice: itemValue });
+                console.log('Voice changed to:', itemValue);
+              }}
               style={styles.picker}
             >
               {voices.map((voice) => (
@@ -144,7 +146,10 @@ export default function TabTwoScreen() {
               maximumValue={1.0}
               step={0.1}
               value={ttsConfig.speechRate}
-              onValueChange={(value) => setTtsConfig({ speechRate: value })}
+              onValueChange={(value) => {
+                setTtsConfig({ speechRate: value });
+                console.log('Speech rate changed to:', value);
+              }}
             />
           </View>
 
@@ -156,7 +161,10 @@ export default function TabTwoScreen() {
               maximumValue={2.0}
               step={0.1}
               value={ttsConfig.speechPitch}
-              onValueChange={(value) => setTtsConfig({ speechPitch: value })}
+              onValueChange={(value) => {
+                setTtsConfig({ speechPitch: value });
+                console.log('Speech pitch changed to:', value);
+              }}
             />
           </View>
         </View>
