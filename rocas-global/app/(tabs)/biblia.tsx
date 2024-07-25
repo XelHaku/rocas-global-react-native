@@ -51,6 +51,10 @@ export default function Bible() {
   const processText = (text: string) => {
     return text.replace(/\/n/g, ' ').trim();
   };
+  
+  const getBookName = (bookName: string) => {
+    return bookName.replace('.json', '').replace(/_/g, ' ');
+  };
 
   useEffect(() => {
     const initTts = async () => {
@@ -84,7 +88,7 @@ export default function Bible() {
       setTextToRead(processedText);
       startSpeech(processedText);
     }
-  }, [selectedChapter]);
+  }, [selectedChapter, selectedBook]);
 
   const handleChapterChange = useCallback((chapter: number) => {
     setSelectedChapter(chapter);
@@ -101,10 +105,13 @@ export default function Bible() {
 
   const startSpeech = (text: string) => {
     const processedText = processText(text);
+    const bookName = getBookName(selectedBook);
+    const introText = `Libro ${bookName}, capítulo ${selectedChapter}. `;
+    const fullText = introText + processedText;
     
     if (Platform.OS === 'web') {
       if ('speechSynthesis' in window) {
-        const utterance = new SpeechSynthesisUtterance(processedText);
+        const utterance = new SpeechSynthesisUtterance(fullText);
         utterance.lang = 'es-MX';
         utterance.rate = 0.8;
         utterance.pitch = 0.6;
@@ -119,7 +126,7 @@ export default function Bible() {
         alert('La síntesis de voz no está disponible en este navegador');
       }
     } else if (ttsAvailable && Tts) {
-      Tts.speak(processedText, {
+      Tts.speak(fullText, {
         androidParams: {
           KEY_PARAM_STREAM: 'STREAM_MUSIC',
           KEY_PARAM_VOLUME: 1,
