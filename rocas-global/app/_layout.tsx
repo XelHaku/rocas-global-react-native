@@ -5,13 +5,18 @@ import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { useEffect } from 'react';
 import 'react-native-reanimated';
+import {PrivyProvider} from '@privy-io/expo';
 
 import { useColorScheme } from '@/components/useColorScheme';
 import React from 'react';
 import useAppStore from '@/store/store';
 import Onboarding from '@/components/Onboarding'; // Importa el componente de Onboarding
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import 'fast-text-encoding';
+import 'react-native-get-random-values';
+import '@ethersproject/shims';
 
+// Your root component
 export {
   ErrorBoundary,
 } from 'expo-router';
@@ -71,11 +76,13 @@ function RootLayoutNav() {
   }
 
   return (
+    // <PrivyProvider appId={'clyah1e3600pz1qdwmit0j2a2'}>
     <ThemeProvider value={theme === "dark" ? DarkTheme : DefaultTheme}>
       <Stack>
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
         <Stack.Screen name="modal" options={{ presentation: "modal" }} />
       </Stack>
     </ThemeProvider>
+    // </PrivyProvider>
   );
 }

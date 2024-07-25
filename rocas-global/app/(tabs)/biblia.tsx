@@ -31,7 +31,6 @@ export default function Bible() {
     toggleFavoriteVerse,
     setTextToRead,
     theme: appTheme,
-    ttsConfig,
   } = useAppStore();
 
   const [ttsAvailable, setTtsAvailable] = useState(false);
@@ -42,6 +41,16 @@ export default function Bible() {
 
   const bookContent = bibliaContent[selectedBook as keyof typeof bibliaContent] || [];
 
+  const goToNextChapter = useCallback(() => {
+    if (selectedChapter < bookContent.length) {
+      setSelectedChapter(selectedChapter + 1);
+    }
+  }, [selectedChapter, bookContent.length, setSelectedChapter]);
+
+  const processText = (text: string) => {
+    return text.replace(/\/n/g, ' ').trim();
+  };
+
   useEffect(() => {
     const initTts = async () => {
       if (Platform.OS === 'web') {
@@ -49,8 +58,11 @@ export default function Bible() {
       } else if (Tts) {
         try {
           await Tts.getInitStatus();
-          await Tts.setDefaultLanguage('es-ES');
+          await Tts.setDefaultLanguage('es-MX');
+          await Tts.setDefaultRate(0.8);
+          await Tts.setDefaultPitch(0.6);
           setTtsAvailable(true);
+          console.log('TTS configurado: español MX, velocidad 0.8, tono 0.6');
         } catch (err) {
           console.error('Error initializing TTS:', err);
           setTtsAvailable(false);
@@ -65,6 +77,15 @@ export default function Bible() {
     };
   }, []);
 
+  useEffect(() => {
+    if (isPlaying) {
+      const text = bookContent[selectedChapter - 1].join('. ');
+      const processedText = processText(text);
+      setTextToRead(processedText);
+      startSpeech(processedText);
+    }
+  }, [selectedChapter]);
+
   const handleChapterChange = useCallback((chapter: number) => {
     setSelectedChapter(chapter);
   }, [setSelectedChapter]);
@@ -73,7 +94,7 @@ export default function Bible() {
     <TouchableOpacity onPress={() => toggleFavoriteVerse(verse)}>
       <View style={[styles.verse, favoriteVerses.includes(verse) && { backgroundColor: colors.notification }]}>
         <Text style={[styles.verseNumber, { color: colors.text }]}>{verseIndex + 1}</Text>
-        <Text style={[styles.verseText, { color: colors.text }]}>{verse}</Text>
+        <Text style={[styles.verseText, { color: colors.text }]}>{processText(verse)}</Text>
       </View>
     </TouchableOpacity>
   ), [favoriteVerses, toggleFavoriteVerse, colors]);
@@ -83,19 +104,18 @@ export default function Bible() {
   }
 
   const startSpeech = (text: string) => {
+    const processedText = processText(text);
+    
     if (Platform.OS === 'web') {
       if ('speechSynthesis' in window) {
-        const utterance = new SpeechSynthesisUtterance(text);
-        utterance.lang = 'es-ES';
-        const selectedWebVoice = window.speechSynthesis.getVoices().find(
-          (voice, index) => `web-voice-${index}` === ttsConfig.selectedVoice
-        );
-        if (selectedWebVoice) {
-          utterance.voice = selectedWebVoice;
-        }
-        utterance.rate = ttsConfig.speechRate;
-        utterance.pitch = ttsConfig.speechPitch;
-        utterance.onend = () => setIsPlaying(false);
+        const utterance = new SpeechSynthesisUtterance(processedText);
+        utterance.lang = 'es-MX';
+        utterance.rate = 0.8;
+        utterance.pitch = 0.6;
+        utterance.onend = () => {
+          setIsPlaying(false);
+          goToNextChapter();
+        };
         window.speechSynthesis.speak(utterance);
         setIsPlaying(true);
       } else {
@@ -103,7 +123,7 @@ export default function Bible() {
         alert('La síntesis de voz no está disponible en este navegador');
       }
     } else if (ttsAvailable && Tts) {
-      Tts.speak(text, {
+      Tts.speak(processedText, {
         androidParams: {
           KEY_PARAM_STREAM: 'STREAM_MUSIC',
           KEY_PARAM_VOLUME: 1,
@@ -111,7 +131,10 @@ export default function Bible() {
         },
       });
       setIsPlaying(true);
-      Tts.addEventListener('tts-finish', () => setIsPlaying(false));
+      Tts.addEventListener('tts-finish', () => {
+        setIsPlaying(false);
+        goToNextChapter();
+      });
     } else {
       console.log('TTS is not available on this platform');
       alert('La síntesis de voz no está disponible en esta plataforma');
@@ -134,8 +157,9 @@ export default function Bible() {
       stopSpeech();
     } else {
       const text = bookContent[selectedChapter - 1].join('. ');
-      setTextToRead(text);
-      startSpeech(text);
+      const processedText = processText(text);
+      setTextToRead(processedText);
+      startSpeech(processedText);
     }
   };
 

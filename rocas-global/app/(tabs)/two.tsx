@@ -1,63 +1,41 @@
-import React, { useState, useEffect } from 'react';
-import { StyleSheet, Switch, TouchableOpacity, TextInput, Platform } from 'react-native';
+import React, { useEffect } from 'react';
+import { StyleSheet, Switch, Platform } from 'react-native';
 import { Text, View } from '@/components/Themed';
 import useAppStore from '@/store/store';
 import { FontAwesome } from '@expo/vector-icons';
-import { Picker } from '@react-native-picker/picker';
-import Slider from '@react-native-community/slider';
 
 const Tts = Platform.OS !== 'web' ? require('react-native-tts').default : null;
 
-interface Voice {
-  id: string;
-  name: string;
-}
-
 export default function TabTwoScreen() {
-  const { theme, setTheme, ttsConfig, setTtsConfig } = useAppStore();
-  console.log('Current theme:', theme);
-  console.log('Current TTS config:', ttsConfig);
-
-  const [voices, setVoices] = useState<Voice[]>([]);
-  const [isTtsInitialized, setIsTtsInitialized] = useState<boolean>(false);
-  const [textToRead, setTextToRead] = useState<string>('');
+  const { theme, setTheme } = useAppStore();
 
   useEffect(() => {
     const initTTS = async () => {
       if (Platform.OS === 'web') {
         if ('speechSynthesis' in window) {
           window.speechSynthesis.onvoiceschanged = () => {
-            const webVoices = window.speechSynthesis.getVoices();
-            const processedVoices = webVoices.map((voice, index) => ({
-              id: `web-voice-${index}`,
-              name: voice.name
-            }));
-            setVoices(processedVoices);
-            if (processedVoices.length > 0 && !ttsConfig.selectedVoice) {
-              setTtsConfig({ selectedVoice: processedVoices[0].id });
-              console.log('Setting initial TTS voice:', processedVoices[0].id);
+            const voices = window.speechSynthesis.getVoices();
+            const spanishVoice = voices.find(voice => 
+              voice.lang.startsWith('es') && voice.name.toLowerCase().includes('MX')
+            );
+            if (spanishVoice) {
+              console.log('Voz en español de México configurada:', spanishVoice.name);
+            } else {
+              console.log('No se encontró una voz en español de México');
             }
-            setIsTtsInitialized(true);
           };
         } else {
-          console.error("Web Speech API not supported");
+          console.error("Web Speech API no soportada");
         }
       } else if (Tts) {
         try {
           await Tts.getInitStatus();
-          const availableVoices = await Tts.voices();
-          const processedVoices = availableVoices.map((voice: any) => ({
-            id: voice.id || voice.identifier || `voice-${Math.random()}`,
-            name: voice.name || voice.language || 'Voz sin nombre'
-          }));
-          setVoices(processedVoices);
-          if (processedVoices.length > 0 && !ttsConfig.selectedVoice) {
-            setTtsConfig({ selectedVoice: processedVoices[0].id });
-            console.log('Setting initial TTS voice:', processedVoices[0].id);
-          }
-          setIsTtsInitialized(true);
+          await Tts.setDefaultLanguage('es-MX');
+          await Tts.setDefaultRate(0.8);
+          await Tts.setDefaultPitch(1);
+          console.log('TTS configurado: español MX, velocidad 0.8, tono 0.35');
         } catch (error) {
-          console.error("Error initializing TTS:", error);
+          console.error("Error al inicializar TTS:", error);
         }
       }
     };
@@ -65,39 +43,10 @@ export default function TabTwoScreen() {
     initTTS();
   }, []);
 
-  useEffect(() => {
-    if (isTtsInitialized && ttsConfig.selectedVoice && Platform.OS !== 'web' && Tts) {
-      Tts.setDefaultVoice(ttsConfig.selectedVoice);
-      Tts.setDefaultRate(ttsConfig.speechRate);
-      Tts.setDefaultPitch(ttsConfig.speechPitch);
-      console.log('Updated TTS settings:', ttsConfig);
-    }
-  }, [isTtsInitialized, ttsConfig]);
-
   const toggleTheme = () => {
     const newTheme = theme === 'light' ? 'dark' : 'light';
     setTheme(newTheme);
-    console.log('Theme changed to:', newTheme);
-  };
-
-  const handleReadText = () => {
-    if (isTtsInitialized && textToRead) {
-      console.log('Reading text with current TTS config:', ttsConfig);
-      if (Platform.OS === 'web') {
-        const utterance = new SpeechSynthesisUtterance(textToRead);
-        const selectedWebVoice = window.speechSynthesis.getVoices().find(
-          (voice, index) => `web-voice-${index}` === ttsConfig.selectedVoice
-        );
-        if (selectedWebVoice) {
-          utterance.voice = selectedWebVoice;
-        }
-        utterance.rate = ttsConfig.speechRate;
-        utterance.pitch = ttsConfig.speechPitch;
-        window.speechSynthesis.speak(utterance);
-      } else if (Tts) {
-        Tts.speak(textToRead);
-      }
-    }
+    console.log('Tema cambiado a:', newTheme);
   };
 
   return (
@@ -117,57 +66,11 @@ export default function TabTwoScreen() {
         <FontAwesome name="moon-o" size={24} color={theme === 'dark' ? '#f1c40f' : '#7f8c8d'} />
       </View>
 
-      <View style={styles.ttsContainer}>
-   
-        <View style={styles.settingsContainer}>
-          <Text style={styles.settingsTitle}>Configuración de Lectura:</Text>
-
-          <View style={styles.settingItem}>
-            <Text style={styles.label}>Voz:</Text>
-            <Picker
-              selectedValue={ttsConfig.selectedVoice}
-              onValueChange={(itemValue: string) => {
-                setTtsConfig({ selectedVoice: itemValue });
-                console.log('Voice changed to:', itemValue);
-              }}
-              style={styles.picker}
-            >
-              {voices.map((voice) => (
-                <Picker.Item key={voice.id} label={voice.name} value={voice.id} />
-              ))}
-            </Picker>
-          </View>
-
-          <View style={styles.settingItem}>
-            <Text style={styles.label}>Velocidad: {ttsConfig.speechRate.toFixed(1)}</Text>
-            <Slider
-              style={styles.slider}
-              minimumValue={0.1}
-              maximumValue={1.0}
-              step={0.1}
-              value={ttsConfig.speechRate}
-              onValueChange={(value) => {
-                setTtsConfig({ speechRate: value });
-                console.log('Speech rate changed to:', value);
-              }}
-            />
-          </View>
-
-          <View style={styles.settingItem}>
-            <Text style={styles.label}>Tono: {ttsConfig.speechPitch.toFixed(1)}</Text>
-            <Slider
-              style={styles.slider}
-              minimumValue={0.5}
-              maximumValue={2.0}
-              step={0.1}
-              value={ttsConfig.speechPitch}
-              onValueChange={(value) => {
-                setTtsConfig({ speechPitch: value });
-                console.log('Speech pitch changed to:', value);
-              }}
-            />
-          </View>
-        </View>
+      <View style={styles.infoContainer}>
+        <Text style={styles.infoText}>Configuración de Lectura:</Text>
+        <Text style={styles.infoText}>Voz: Español (México)</Text>
+        <Text style={styles.infoText}>Velocidad: 0.8</Text>
+        <Text style={styles.infoText}>Tono: 0.35</Text>
       </View>
     </View>
   );
@@ -193,48 +96,14 @@ const styles = StyleSheet.create({
   switch: {
     marginHorizontal: 10,
   },
-  ttsContainer: {
+  infoContainer: {
     width: '100%',
-  },
-  textInput: {
-    borderWidth: 1,
-    borderColor: '#ddd',
-    borderRadius: 5,
-    padding: 10,
-    marginBottom: 10,
-    minHeight: 100,
-  },
-  button: {
-    backgroundColor: '#2196F3',
     padding: 10,
     borderRadius: 5,
-    alignItems: 'center',
+    backgroundColor: '#f0f0f0',
   },
-  buttonText: {
-    color: 'white',
-    fontSize: 16,
-  },
-  settingsContainer: {
-    marginTop: 20,
-  },
-  settingsTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    marginBottom: 10,
-  },
-  settingItem: {
-    marginBottom: 10,
-  },
-  label: {
+  infoText: {
     fontSize: 16,
     marginBottom: 5,
-  },
-  picker: {
-    height: 50,
-    width: '100%',
-  },
-  slider: {
-    width: '100%',
-    height: 40,
   },
 });
