@@ -4,6 +4,7 @@ import { bibliaContent } from '@/constants/bibliaContent';
 import useAppStore from '@/store/store';
 import { useFonts, Lora_400Regular, Lora_700Bold } from '@expo-google-fonts/lora';
 import { useTheme } from '@react-navigation/native';
+import { FontAwesome } from '@expo/vector-icons';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
@@ -13,7 +14,7 @@ if (Platform.OS !== 'web') {
 }
 
 const getColors = (theme: 'light' | 'dark') => ({
-  background: theme === 'light' ? '#FFF8E1' : '#1A1A1A',
+  background: theme === 'light' ,
   card: theme === 'light' ? '#F2E8C9' : '#2C2C2C',
 });
 
@@ -62,7 +63,6 @@ export default function Bible() {
           await Tts.setDefaultRate(0.8);
           await Tts.setDefaultPitch(0.6);
           setTtsAvailable(true);
-          console.log('TTS configurado: español MX, velocidad 0.8, tono 0.6');
         } catch (err) {
           console.error('Error initializing TTS:', err);
           setTtsAvailable(false);
@@ -98,10 +98,6 @@ export default function Bible() {
       </View>
     </TouchableOpacity>
   ), [favoriteVerses, toggleFavoriteVerse, colors]);
-
-  if (!fontsLoaded) {
-    return null;
-  }
 
   const startSpeech = (text: string) => {
     const processedText = processText(text);
@@ -163,8 +159,12 @@ export default function Bible() {
     }
   };
 
+  if (!fontsLoaded) {
+    return null;
+  }
+
   return (
-    <View style={[styles.container, { backgroundColor: customColors.background }]}>
+    <View style={[styles.container]}>
       <SafeAreaView style={styles.safeArea}>
         <View style={styles.chapterPickerContainer}>
           <ScrollView
@@ -204,12 +204,14 @@ export default function Bible() {
         </View>
 
         <TouchableOpacity 
-          style={[styles.readButton, isPlaying && styles.stopButton]}
+          style={[styles.floatingButton, isPlaying && styles.stopButton]}
           onPress={handleReadText}
         >
-          <Text style={styles.readButtonText}>
-            {isPlaying ? 'Detener' : 'Leer Texto'}
-          </Text>
+          <FontAwesome 
+            name={isPlaying ? "stop" : "volume-up"} 
+            size={24} 
+            color="white" 
+          />
         </TouchableOpacity>
       </SafeAreaView>
     </View>
@@ -225,7 +227,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   chapterPickerContainer: {
-    height: '10%',
+    height: '7%',
     justifyContent: 'center',
   },
   chapterPicker: {
@@ -295,18 +297,26 @@ const styles = StyleSheet.create({
   selectedChapterItem: {
     borderBottomWidth: 2,
   },
-  readButton: {
-    padding: 10,
-    backgroundColor: '#007BFF',
+  floatingButton: {
+    position: 'absolute',
+    right: 20,
+    bottom: 10,
+    backgroundColor: '#3C4655',
+    width: 50,
+    height: 50,
+    borderRadius: 30,
     alignItems: 'center',
-    borderRadius: 5,
-    margin: 10,
+    justifyContent: 'center',
+    elevation: 8,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 4,
+    },
+    shadowOpacity: 0.30,
+    shadowRadius: 4.65,
   },
   stopButton: {
     backgroundColor: '#DC3545',
-  },
-  readButtonText: {
-    color: '#FFFFFF',
-    fontSize: 16,
   },
 });
