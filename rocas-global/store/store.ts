@@ -33,6 +33,10 @@ interface AppStore extends BibleState {
   setVoiceGender: (gender: 'male' | 'female') => void;
   isFirstLaunch: boolean;
   setFirstLaunch: (firstLaunch: boolean) => void;
+  isPlaying: boolean;
+  setIsPlaying: (isPlaying: boolean) => void;
+  isPaused: boolean;
+  setIsPaused: (isPaused: boolean) => void;
 }
 
 const useAppStore = create<AppStore>((set) => ({
@@ -54,8 +58,8 @@ const useAppStore = create<AppStore>((set) => ({
   })),
   ttsConfig: {
     selectedVoice: '',
-    speechRate: 0.5,
-    speechPitch: 1.0,
+    speechRate: 1.06,
+    speechPitch: 0.79,
     voiceGender: 'female',
   },
   setTtsConfig: (config) => set((state) => ({
@@ -72,6 +76,10 @@ const useAppStore = create<AppStore>((set) => ({
   })),
   isFirstLaunch: true,
   setFirstLaunch: (firstLaunch) => set({ isFirstLaunch: firstLaunch }),
+  isPlaying: false,
+  setIsPlaying: (isPlaying) => set({ isPlaying }),
+  isPaused: false,
+  setIsPaused: (isPaused) => set({ isPaused }),
 }));
 
 export default useAppStore;

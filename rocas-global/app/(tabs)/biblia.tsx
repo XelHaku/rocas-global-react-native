@@ -1,5 +1,5 @@
-import React, { useCallback, useEffect, useState } from 'react';
-import { StyleSheet, View, Text, TouchableOpacity, FlatList, Dimensions, ScrollView, SafeAreaView, Platform, StatusBar } from 'react-native';
+import React, { useCallback, useEffect, useState, useRef } from 'react';
+import { StyleSheet, View, Text, TouchableOpacity, FlatList, Dimensions, ScrollView, SafeAreaView, Platform, StatusBar, Animated } from 'react-native';
 import { bibliaContent } from '@/constants/bibliaContent';
 import useAppStore from '@/store/store';
 import { useFonts, Lora_400Regular, Lora_700Bold } from '@expo-google-fonts/lora';
@@ -29,25 +29,25 @@ export default function Bible() {
     selectedChapter, 
     favoriteVerses, 
     setSelectedChapter, 
+    setSelectedBook,
     toggleFavoriteVerse,
     setTextToRead,
     theme: appTheme,
-    ttsConfig
+    ttsConfig,
+    isPlaying,
+    setIsPlaying,
+    isPaused,
+    setIsPaused
   } = useAppStore();
 
   const [ttsAvailable, setTtsAvailable] = useState(false);
-  const [isPlaying, setIsPlaying] = useState(false);
 
   const { colors } = useTheme();
   const customColors = getColors(appTheme);
 
   const bookContent = bibliaContent[selectedBook as keyof typeof bibliaContent] || [];
 
-  const goToNextChapter = useCallback(() => {
-    if (selectedChapter < bookContent.length) {
-      setSelectedChapter(selectedChapter + 1);
-    }
-  }, [selectedChapter, bookContent.length, setSelectedChapter]);
+  const fadeAnim = useRef(new Animated.Value(1)).current;
 
   const processText = (text: string) => {
     return text.replace(/\/n/g, ' ').trim();
@@ -56,6 +56,152 @@ export default function Bible() {
   const getBookName = (bookName: string) => {
     return bookName.replace('.json', '').replace(/_/g, ' ');
   };
+
+  const startSpeech = useCallback((text: string) => {
+    const processedText = processText(text);
+    const bookName = getBookName(selectedBook);
+    const introText = `Libro ${bookName}, capítulo ${selectedChapter}. `;
+    const fullText = introText + processedText;
+    
+    if (Platform.OS === 'web') {
+      if ('speechSynthesis' in window) {
+        const utterance = new SpeechSynthesisUtterance(fullText);
+        utterance.lang = 'es-MX';
+        utterance.rate = ttsConfig.speechRate;
+        utterance.pitch = ttsConfig.speechPitch;
+        utterance.onend = () => {
+          setIsPlaying(false);
+          setIsPaused(false);
+        };
+        window.speechSynthesis.speak(utterance);
+        setIsPlaying(true);
+        setIsPaused(false);
+      } else {
+        console.log('Web Speech API is not supported in this browser');
+        alert('La síntesis de voz no está disponible en este navegador');
+      }
+    } else if (ttsAvailable && Tts) {
+      Tts.speak(fullText, {
+        androidParams: {
+          KEY_PARAM_STREAM: 'STREAM_MUSIC',
+          KEY_PARAM_VOLUME: 1,
+          KEY_PARAM_PAN: 0,
+        },
+        rate: ttsConfig.speechRate,
+        pitch: ttsConfig.speechPitch,
+      });
+      setIsPlaying(true);
+      setIsPaused(false);
+      Tts.addEventListener('tts-finish', () => {
+        setIsPlaying(false);
+        setIsPaused(false);
+      });
+    } else {
+      console.log('TTS is not available on this platform');
+      alert('La síntesis de voz no está disponible en esta plataforma');
+    }
+  }, [selectedBook, selectedChapter, ttsConfig, ttsAvailable, setIsPlaying, setIsPaused]);
+
+  const pauseSpeech = useCallback(() => {
+    if (Platform.OS === 'web') {
+      if ('speechSynthesis' in window) {
+        window.speechSynthesis.pause();
+      }
+    } else if (Tts) {
+      Tts.pause();
+    }
+    setIsPaused(true);
+  }, [setIsPaused]);
+
+  const resumeSpeech = useCallback(() => {
+    if (Platform.OS === 'web') {
+      if ('speechSynthesis' in window) {
+        window.speechSynthesis.resume();
+      }
+    } else if (Tts) {
+      Tts.resume();
+    }
+    setIsPaused(false);
+  }, [setIsPaused]);
+
+  const stopSpeech = useCallback(() => {
+    if (Platform.OS === 'web') {
+      if ('speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+      }
+    } else if (Tts) {
+      Tts.stop();
+    }
+    setIsPlaying(false);
+    setIsPaused(false);
+  }, [setIsPlaying, setIsPaused]);
+
+  const restartSpeech = useCallback(() => {
+    stopSpeech();
+    const text = bookContent[selectedChapter - 1].join('. ');
+    const processedText = processText(text);
+    setTextToRead(processedText);
+    startSpeech(processedText);
+  }, [bookContent, selectedChapter, stopSpeech, setTextToRead, startSpeech]);
+
+  const handleReadText = useCallback(() => {
+    if (isPlaying) {
+      if (isPaused) {
+        resumeSpeech();
+      } else {
+        pauseSpeech();
+      }
+    } else {
+      restartSpeech();
+    }
+  }, [isPlaying, isPaused, resumeSpeech, pauseSpeech, restartSpeech]);
+
+  const handleChapterChange = useCallback((chapter: number) => {
+    stopSpeech();
+    Animated.timing(fadeAnim, {
+      toValue: 0,
+      duration: 200,
+      useNativeDriver: true,
+    }).start(() => {
+      setSelectedChapter(chapter);
+      Animated.timing(fadeAnim, {
+        toValue: 1,
+        duration: 200,
+        useNativeDriver: true,
+      }).start();
+    });
+  }, [setSelectedChapter, fadeAnim, stopSpeech]);
+
+  const goToNextChapter = useCallback(() => {
+    if (selectedChapter < bookContent.length) {
+      handleChapterChange(selectedChapter + 1);
+    } else {
+      const bookKeys = Object.keys(bibliaContent);
+      const currentBookIndex = bookKeys.indexOf(selectedBook);
+      if (currentBookIndex < bookKeys.length - 1) {
+        const nextBook = bookKeys[currentBookIndex + 1];
+        setSelectedBook(nextBook);
+        handleChapterChange(1);
+      } else {
+        stopSpeech();
+      }
+    }
+  }, [selectedChapter, selectedBook, bookContent.length, handleChapterChange, setSelectedBook, stopSpeech]);
+
+  const goToPreviousChapter = useCallback(() => {
+    if (selectedChapter > 1) {
+      handleChapterChange(selectedChapter - 1);
+    } else {
+      const bookKeys = Object.keys(bibliaContent);
+      const currentBookIndex = bookKeys.indexOf(selectedBook);
+      if (currentBookIndex > 0) {
+        const previousBook = bookKeys[currentBookIndex - 1];
+        setSelectedBook(previousBook);
+        const previousBookContent = bibliaContent[previousBook as keyof typeof bibliaContent] || [];
+        handleChapterChange(previousBookContent.length);
+      }
+    }
+  }, [selectedChapter, selectedBook, handleChapterChange, setSelectedBook]);
 
   useEffect(() => {
     const initTts = async () => {
@@ -80,20 +226,7 @@ export default function Bible() {
     return () => {
       stopSpeech();
     };
-  }, [ttsConfig.speechRate, ttsConfig.speechPitch]);
-
-  useEffect(() => {
-    if (isPlaying) {
-      const text = bookContent[selectedChapter - 1].join('. ');
-      const processedText = processText(text);
-      setTextToRead(processedText);
-      startSpeech(processedText);
-    }
-  }, [selectedChapter, selectedBook]);
-
-  const handleChapterChange = useCallback((chapter: number) => {
-    setSelectedChapter(chapter);
-  }, [setSelectedChapter]);
+  }, [ttsConfig.speechRate, ttsConfig.speechPitch, stopSpeech]);
 
   const renderVerse = useCallback(({ item: verse, index: verseIndex }: { item: string, index: number }) => (
     <TouchableOpacity onPress={() => toggleFavoriteVerse(verse)}>
@@ -103,71 +236,6 @@ export default function Bible() {
       </View>
     </TouchableOpacity>
   ), [favoriteVerses, toggleFavoriteVerse, colors]);
-
-  const startSpeech = (text: string) => {
-    const processedText = processText(text);
-    const bookName = getBookName(selectedBook);
-    const introText = `Libro ${bookName}, capítulo ${selectedChapter}. `;
-    const fullText = introText + processedText;
-    
-    if (Platform.OS === 'web') {
-      if ('speechSynthesis' in window) {
-        const utterance = new SpeechSynthesisUtterance(fullText);
-        utterance.lang = 'es-MX';
-        utterance.rate = ttsConfig.speechRate;
-        utterance.pitch = ttsConfig.speechPitch;
-        utterance.onend = () => {
-          setIsPlaying(false);
-          goToNextChapter();
-        };
-        window.speechSynthesis.speak(utterance);
-        setIsPlaying(true);
-      } else {
-        console.log('Web Speech API is not supported in this browser');
-        alert('La síntesis de voz no está disponible en este navegador');
-      }
-    } else if (ttsAvailable && Tts) {
-      Tts.speak(fullText, {
-        androidParams: {
-          KEY_PARAM_STREAM: 'STREAM_MUSIC',
-          KEY_PARAM_VOLUME: 1,
-          KEY_PARAM_PAN: 0,
-        },
-        rate: ttsConfig.speechRate,
-        pitch: ttsConfig.speechPitch,
-      });
-      setIsPlaying(true);
-      Tts.addEventListener('tts-finish', () => {
-        setIsPlaying(false);
-        goToNextChapter();
-      });
-    } else {
-      console.log('TTS is not available on this platform');
-      alert('La síntesis de voz no está disponible en esta plataforma');
-    }
-  };
-
-  const stopSpeech = () => {
-    if (Platform.OS === 'web') {
-      if ('speechSynthesis' in window) {
-        window.speechSynthesis.cancel();
-      }
-    } else if (Tts) {
-      Tts.stop();
-    }
-    setIsPlaying(false);
-  };
-
-  const handleReadText = () => {
-    if (isPlaying) {
-      stopSpeech();
-    } else {
-      const text = bookContent[selectedChapter - 1].join('. ');
-      const processedText = processText(text);
-      setTextToRead(processedText);
-      startSpeech(processedText);
-    }
-  };
 
   if (!fontsLoaded) {
     return null;
@@ -201,33 +269,64 @@ export default function Bible() {
         <View style={styles.contentContainerWrapper}>
           <View style={[styles.contentContainerBeforeAfter, styles.contentContainerBefore, { backgroundColor: customColors.card }]} />
           <View style={[styles.contentContainerBeforeAfter, styles.contentContainerAfter, { backgroundColor: customColors.card }]} />
-          <FlatList
-            style={styles.chapterContainer}
-            contentContainerStyle={[styles.chapterContentContainer, { 
-              backgroundColor: customColors.card,
-              borderColor: colors.border,
-            }]}
-            data={bookContent[selectedChapter - 1]}
-            renderItem={renderVerse}
-            keyExtractor={(_, index) => `verse-${index}`}
-          />
+          <Animated.View style={{ opacity: fadeAnim, flex: 1 }}>
+            <FlatList
+              style={styles.chapterContainer}
+              contentContainerStyle={[styles.chapterContentContainer, { 
+                backgroundColor: customColors.card,
+                borderColor: colors.border,
+              }]}
+              data={bookContent[selectedChapter - 1]}
+              renderItem={renderVerse}
+              keyExtractor={(_, index) => `verse-${index}`}
+            />
+          </Animated.View>
         </View>
 
         <TouchableOpacity 
-          style={[styles.floatingButton, isPlaying && styles.stopButton]}
-          onPress={handleReadText}
+          style={[styles.floatingButton, styles.floatingButtonLeft]}
+          onPress={goToPreviousChapter}
         >
-          <FontAwesome 
-            name={isPlaying ? "stop" : "volume-up"} 
-            size={24} 
-            color="white" 
-          />
+          <FontAwesome name="chevron-left" size={24} color="white" />
+        </TouchableOpacity>
+
+        <View style={styles.controlButtonsContainer}>
+          <TouchableOpacity 
+            style={styles.controlButton}
+            onPress={handleReadText}
+          >
+            <FontAwesome 
+              name={isPlaying ? (isPaused ? "play" : "pause") : "play"} 
+              size={20} 
+              color="white" 
+            />
+          </TouchableOpacity>
+
+          <TouchableOpacity 
+            style={styles.controlButton}
+            onPress={stopSpeech}
+          >
+            <FontAwesome name="stop" size={20} color="white" />
+          </TouchableOpacity>
+
+          <TouchableOpacity 
+            style={styles.controlButton}
+            onPress={restartSpeech}
+          >
+            <FontAwesome name="refresh" size={20} color="white" />
+          </TouchableOpacity>
+        </View>
+
+        <TouchableOpacity 
+          style={[styles.floatingButton, styles.floatingButtonRight]}
+          onPress={goToNextChapter}
+        >
+          <FontAwesome name="chevron-right" size={24} color="white" />
         </TouchableOpacity>
       </SafeAreaView>
     </View>
   );
 }
-
 
 const styles = StyleSheet.create({
   container: {
@@ -310,12 +409,11 @@ const styles = StyleSheet.create({
   },
   floatingButton: {
     position: 'absolute',
-    right: 20,
-    bottom: 10,
-    backgroundColor: '#3C4655',
+    bottom: 20,
+    backgroundColor: 'rgba(60, 70, 85, 0.3)',
     width: 50,
     height: 50,
-    borderRadius: 30,
+    borderRadius: 25,
     alignItems: 'center',
     justifyContent: 'center',
     elevation: 8,
@@ -327,7 +425,35 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.30,
     shadowRadius: 4.65,
   },
-  stopButton: {
-    backgroundColor: '#DC3545',
+  floatingButtonLeft: {
+    left: 20,
+  },
+  floatingButtonRight: {
+    right: 20,
+  },
+  controlButtonsContainer: {
+    position: 'absolute',
+    bottom: 20,
+    left: '50%',
+    transform: [{ translateX: -75 }],
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    width: 150,
+  },
+  controlButton: {
+    backgroundColor: 'rgba(60, 70, 85, 0.3)',
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    alignItems: 'center',
+    justifyContent: 'center',
+    elevation: 8,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 4,
+    },
+    shadowOpacity: 0.30,
+    shadowRadius: 4.65,
   },
 });

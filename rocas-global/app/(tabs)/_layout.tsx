@@ -21,16 +21,20 @@ function BookSelector() {
   const { selectedBook, setSelectedBook } = useAppStore();
   const { colors } = useTheme();
   const [isListVisible, setIsListVisible] = useState(false);
+  const [selectedTestament, setSelectedTestament] = useState<'Viejo' | 'Nuevo' | null>(null);
   const scrollViewRef = useRef<ScrollView>(null);
 
   const selectedBookName = bibliaRV1960.find(book => book.archivo === selectedBook)?.nombre || 'Seleccionar Libro';
 
   useEffect(() => {
-    if (isListVisible && scrollViewRef.current) {
-      const index = bibliaRV1960.findIndex(book => book.archivo === selectedBook);
+    if (isListVisible && scrollViewRef.current && selectedTestament) {
+      const index = bibliaRV1960.findIndex(book => book.archivo === selectedBook && book.testamento === selectedTestament);
       scrollViewRef.current.scrollTo({ y: index * 40, animated: false });
     }
-  }, [isListVisible, selectedBook]);
+  }, [isListVisible, selectedBook, selectedTestament]);
+
+  const viejoTestamento = bibliaRV1960.filter(book => book.testamento === 'Viejo');
+  const nuevoTestamento = bibliaRV1960.filter(book => book.testamento === 'Nuevo');
 
   return (
     <View style={styles.bookSelectorContainer}>
@@ -61,23 +65,63 @@ function BookSelector() {
           onPressOut={() => setIsListVisible(false)}
         >
           <View style={[styles.bookListContainer, { backgroundColor: colors.card }]}>
-            <ScrollView ref={scrollViewRef}>
-              {bibliaRV1960.map((book) => (
+            {selectedTestament === null ? (
+              <View style={styles.testamentSelectionContainer}>
                 <TouchableOpacity
-                  key={book.archivo}
-                  style={[
-                    styles.bookItem,
-                    selectedBook === book.archivo && { backgroundColor: colors.primary }
-                  ]}
-                  onPress={() => {
-                    setSelectedBook(book.archivo);
-                    setIsListVisible(false);
-                  }}
+                  style={[styles.testamentButton, { backgroundColor: '#D4AF37' }]} // Café dorado
+                  onPress={() => setSelectedTestament('Viejo')}
                 >
-                  <Text style={[styles.bookItemText, { color: colors.text }]}>{book.nombre}</Text>
+                  <FontAwesome 
+                    name="book" 
+                    size={24} 
+                    color="white"
+                    style={styles.testamentIcon}
+                  />
+                  <Text style={styles.testamentButtonText}>Viejo Testamento</Text>
                 </TouchableOpacity>
-              ))}
-            </ScrollView>
+                <TouchableOpacity
+                  style={[styles.testamentButton, { backgroundColor: '#D4AF37' }]} // Café dorado
+                  onPress={() => setSelectedTestament('Nuevo')}
+                >
+                  <FontAwesome 
+                    name="book" 
+                    size={24} 
+                    color="white"
+                    style={styles.testamentIcon}
+                  />
+                  <Text style={styles.testamentButtonText}>Nuevo Testamento</Text>
+                </TouchableOpacity>
+              </View>
+            ) : (
+              <View style={styles.listContainer}>
+                <TouchableOpacity
+                  style={styles.changeTestamentButton}
+                  onPress={() => setSelectedTestament(null)}
+                >
+                  <Text style={styles.changeTestamentButtonText}>Cambiar Testamento</Text>
+                </TouchableOpacity>
+                <ScrollView ref={scrollViewRef} style={styles.scrollView}>
+                  <Text style={styles.testamentoTitle}>
+                    {selectedTestament} Testamento
+                  </Text>
+                  {(selectedTestament === 'Viejo' ? viejoTestamento : nuevoTestamento).map((book) => (
+                    <TouchableOpacity
+                      key={book.archivo}
+                      style={[
+                        styles.bookItem,
+                        selectedBook === book.archivo && { backgroundColor: colors.primary }
+                      ]}
+                      onPress={() => {
+                        setSelectedBook(book.archivo);
+                        setIsListVisible(false);
+                      }}
+                    >
+                      <Text style={[styles.bookItemText, { color: colors.text }]}>{book.nombre}</Text>
+                    </TouchableOpacity>
+                  ))}
+                </ScrollView>
+              </View>
+            )}
           </View>
         </TouchableOpacity>
       </Modal>
@@ -195,10 +239,54 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     padding: 10,
   },
+  testamentSelectionContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    alignItems: 'center',
+    flexWrap: 'wrap',
+  },
+  testamentButton: {
+    width: 100,
+    height: 100,
+    borderRadius: 10,
+    justifyContent: 'center',
+    alignItems: 'center',
+    margin: 5,
+  },
+  testamentIcon: {
+    marginBottom: 5,
+  },
+  testamentButtonText: {
+    color: 'white',
+    fontSize: 14,
+    textAlign: 'center',
+  },
+  changeTestamentButton: {
+    padding: 10,
+    backgroundColor: Colors.light.tint,
+    borderRadius: 5,
+    alignItems: 'center',
+    marginBottom: 10,
+  },
+  changeTestamentButtonText: {
+    fontSize: 16,
+    color: 'white',
+  },
+  listContainer: {
+    flex: 1,
+  },
+  scrollView: {
+    flex: 1,
+  },
+  testamentoTitle: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    marginBottom: 10,
+  },
   bookItem: {
     padding: 10,
-    borderBottomWidth: 1,
-    borderBottomColor: '#ccc',
+    borderRadius: 5,
+    marginVertical: 5,
   },
   bookItemText: {
     fontSize: 16,
