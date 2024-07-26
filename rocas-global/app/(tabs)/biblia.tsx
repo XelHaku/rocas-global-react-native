@@ -1,10 +1,11 @@
 import React, { useCallback, useEffect, useState, useRef } from 'react';
-import { StyleSheet, View, Text, TouchableOpacity, FlatList, Dimensions, ScrollView, SafeAreaView, Platform, StatusBar, Animated } from 'react-native';
+import { View, Text, TouchableOpacity, FlatList, Dimensions, ScrollView, SafeAreaView, Platform, StatusBar, Animated } from 'react-native';
 import { bibliaContent } from '@/constants/bibliaContent';
 import useAppStore from '@/store/store';
 import { useFonts, Lora_400Regular, Lora_700Bold } from '@expo-google-fonts/lora';
 import { useTheme } from '@react-navigation/native';
 import { FontAwesome } from '@expo/vector-icons';
+import { styles } from './BibleStyles';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
@@ -41,6 +42,7 @@ export default function Bible() {
   } = useAppStore();
 
   const [ttsAvailable, setTtsAvailable] = useState(false);
+  const [currentPosition, setCurrentPosition] = useState(0);
 
   const { colors } = useTheme();
   const customColors = getColors(appTheme);
@@ -92,9 +94,11 @@ export default function Bible() {
       });
       setIsPlaying(true);
       setIsPaused(false);
+      setCurrentPosition(0);
       Tts.addEventListener('tts-finish', () => {
         setIsPlaying(false);
         setIsPaused(false);
+        setCurrentPosition(0);
       });
     } else {
       console.log('TTS is not available on this platform');
@@ -108,7 +112,10 @@ export default function Bible() {
         window.speechSynthesis.pause();
       }
     } else if (Tts) {
-      Tts.pause();
+      Tts.stop();
+      Tts.getCurrentPosition().then((position) => {
+        setCurrentPosition(position);
+      });
     }
     setIsPaused(true);
   }, [setIsPaused]);
@@ -119,10 +126,24 @@ export default function Bible() {
         window.speechSynthesis.resume();
       }
     } else if (Tts) {
-      Tts.resume();
+      const text = bookContent[selectedChapter - 1].join('. ');
+      const processedText = processText(text);
+      const bookName = getBookName(selectedBook);
+      const introText = `Libro ${bookName}, capítulo ${selectedChapter}. `;
+      const fullText = introText + processedText;
+      
+      Tts.speak(fullText.substring(currentPosition), {
+        androidParams: {
+          KEY_PARAM_STREAM: 'STREAM_MUSIC',
+          KEY_PARAM_VOLUME: 1,
+          KEY_PARAM_PAN: 0,
+        },
+        rate: ttsConfig.speechRate,
+        pitch: ttsConfig.speechPitch,
+      });
     }
     setIsPaused(false);
-  }, [setIsPaused]);
+  }, [setIsPaused, currentPosition, bookContent, selectedChapter, selectedBook, ttsConfig]);
 
   const stopSpeech = useCallback(() => {
     if (Platform.OS === 'web') {
@@ -134,6 +155,7 @@ export default function Bible() {
     }
     setIsPlaying(false);
     setIsPaused(false);
+    setCurrentPosition(0);
   }, [setIsPlaying, setIsPaused]);
 
   const restartSpeech = useCallback(() => {
@@ -327,7 +349,6 @@ export default function Bible() {
     </View>
   );
 }
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
