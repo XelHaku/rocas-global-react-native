@@ -13,6 +13,7 @@ interface TtsConfig {
   selectedVoice: string;
   speechRate: number;
   speechPitch: number;
+  voiceGender: 'male' | 'female';
 }
 
 interface AppStore extends BibleState {
@@ -27,6 +28,9 @@ interface AppStore extends BibleState {
   setTextToRead: (text: string) => void;
   ttsConfig: TtsConfig;
   setTtsConfig: (config: Partial<TtsConfig>) => void;
+  setSpeechRate: (rate: number) => void;
+  setSpeechPitch: (pitch: number) => void;
+  setVoiceGender: (gender: 'male' | 'female') => void;
   isFirstLaunch: boolean;
   setFirstLaunch: (firstLaunch: boolean) => void;
 }
@@ -52,9 +56,19 @@ const useAppStore = create<AppStore>((set) => ({
     selectedVoice: '',
     speechRate: 0.5,
     speechPitch: 1.0,
+    voiceGender: 'female',
   },
   setTtsConfig: (config) => set((state) => ({
     ttsConfig: { ...state.ttsConfig, ...config }
+  })),
+  setSpeechRate: (rate) => set((state) => ({
+    ttsConfig: { ...state.ttsConfig, speechRate: rate }
+  })),
+  setSpeechPitch: (pitch) => set((state) => ({
+    ttsConfig: { ...state.ttsConfig, speechPitch: pitch }
+  })),
+  setVoiceGender: (gender) => set((state) => ({
+    ttsConfig: { ...state.ttsConfig, voiceGender: gender }
   })),
   isFirstLaunch: true,
   setFirstLaunch: (firstLaunch) => set({ isFirstLaunch: firstLaunch }),

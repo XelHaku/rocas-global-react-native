@@ -14,7 +14,7 @@ if (Platform.OS !== 'web') {
 }
 
 const getColors = (theme: 'light' | 'dark') => ({
-  background: theme === 'light' ,
+  background: theme === 'light' ? '#FFFFFF' : '#121212',
   card: theme === 'light' ? '#F2E8C9' : '#2C2C2C',
 });
 
@@ -32,6 +32,7 @@ export default function Bible() {
     toggleFavoriteVerse,
     setTextToRead,
     theme: appTheme,
+    ttsConfig
   } = useAppStore();
 
   const [ttsAvailable, setTtsAvailable] = useState(false);
@@ -64,8 +65,8 @@ export default function Bible() {
         try {
           await Tts.getInitStatus();
           await Tts.setDefaultLanguage('es-MX');
-          await Tts.setDefaultRate(1);
-          await Tts.setDefaultPitch(0.6);
+          await Tts.setDefaultRate(ttsConfig.speechRate);
+          await Tts.setDefaultPitch(ttsConfig.speechPitch);
           setTtsAvailable(true);
         } catch (err) {
           console.error('Error initializing TTS:', err);
@@ -79,7 +80,7 @@ export default function Bible() {
     return () => {
       stopSpeech();
     };
-  }, []);
+  }, [ttsConfig.speechRate, ttsConfig.speechPitch]);
 
   useEffect(() => {
     if (isPlaying) {
@@ -113,8 +114,8 @@ export default function Bible() {
       if ('speechSynthesis' in window) {
         const utterance = new SpeechSynthesisUtterance(fullText);
         utterance.lang = 'es-MX';
-        utterance.rate = 1;
-        utterance.pitch = 0.8;
+        utterance.rate = ttsConfig.speechRate;
+        utterance.pitch = ttsConfig.speechPitch;
         utterance.onend = () => {
           setIsPlaying(false);
           goToNextChapter();
@@ -132,6 +133,8 @@ export default function Bible() {
           KEY_PARAM_VOLUME: 1,
           KEY_PARAM_PAN: 0,
         },
+        rate: ttsConfig.speechRate,
+        pitch: ttsConfig.speechPitch,
       });
       setIsPlaying(true);
       Tts.addEventListener('tts-finish', () => {
@@ -171,7 +174,7 @@ export default function Bible() {
   }
 
   return (
-    <View style={[styles.container]}>
+    <View style={[styles.container, { backgroundColor: customColors.background }]}>
       <SafeAreaView style={styles.safeArea}>
         <View style={styles.chapterPickerContainer}>
           <ScrollView
@@ -224,6 +227,7 @@ export default function Bible() {
     </View>
   );
 }
+
 
 const styles = StyleSheet.create({
   container: {
