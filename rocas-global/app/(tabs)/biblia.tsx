@@ -1,11 +1,10 @@
 import React, { useCallback, useEffect, useState, useRef } from 'react';
-import { View, Text, TouchableOpacity, FlatList, Dimensions, ScrollView, SafeAreaView, Platform, StatusBar, Animated } from 'react-native';
+import { StyleSheet, View, Text, TouchableOpacity, FlatList, Dimensions, ScrollView, SafeAreaView, Platform, StatusBar, Animated } from 'react-native';
 import { bibliaContent } from '@/constants/bibliaContent';
 import useAppStore from '@/store/store';
 import { useFonts, Lora_400Regular, Lora_700Bold } from '@expo-google-fonts/lora';
 import { useTheme } from '@react-navigation/native';
 import { FontAwesome } from '@expo/vector-icons';
-import { styles } from './BibleStyles';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
@@ -13,6 +12,8 @@ let Tts: any;
 if (Platform.OS !== 'web') {
   Tts = require('react-native-tts').default;
 }
+
+type TTSEvent = number;
 
 const getColors = (theme: 'light' | 'dark') => ({
   background: theme === 'light' ? '#FFFFFF' : '#121212',
@@ -113,7 +114,7 @@ export default function Bible() {
       }
     } else if (Tts) {
       Tts.stop();
-      Tts.getCurrentPosition().then((position) => {
+      Tts.getCurrentPosition((position: TTSEvent) => {
         setCurrentPosition(position);
       });
     }
@@ -182,14 +183,14 @@ export default function Bible() {
     stopSpeech();
     Animated.timing(fadeAnim, {
       toValue: 0,
-      duration: 200,
-      useNativeDriver: true,
+      duration: 150,
+      useNativeDriver: false,
     }).start(() => {
       setSelectedChapter(chapter);
       Animated.timing(fadeAnim, {
         toValue: 1,
-        duration: 200,
-        useNativeDriver: true,
+        duration: 150,
+        useNativeDriver: false, 
       }).start();
     });
   }, [setSelectedChapter, fadeAnim, stopSpeech]);
@@ -349,6 +350,8 @@ export default function Bible() {
     </View>
   );
 }
+
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,

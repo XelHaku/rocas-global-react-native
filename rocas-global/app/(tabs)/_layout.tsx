@@ -59,16 +59,12 @@ function BookSelector() {
         animationType="fade"
         onRequestClose={() => setIsListVisible(false)}
       >
-        <TouchableOpacity 
-          style={styles.modalOverlay} 
-          activeOpacity={1} 
-          onPressOut={() => setIsListVisible(false)}
-        >
+        <View style={styles.modalOverlay}>
           <View style={[styles.bookListContainer, { backgroundColor: colors.card }]}>
             {selectedTestament === null ? (
               <View style={styles.testamentSelectionContainer}>
                 <TouchableOpacity
-                  style={[styles.testamentButton, { backgroundColor: '#D4AF37' }]} // Café dorado
+                  style={[styles.testamentButton, { backgroundColor: '#D4AF37' }]}
                   onPress={() => setSelectedTestament('Viejo')}
                 >
                   <FontAwesome 
@@ -80,7 +76,7 @@ function BookSelector() {
                   <Text style={styles.testamentButtonText}>Viejo Testamento</Text>
                 </TouchableOpacity>
                 <TouchableOpacity
-                  style={[styles.testamentButton, { backgroundColor: '#D4AF37' }]} // Café dorado
+                  style={[styles.testamentButton, { backgroundColor: '#D4AF37' }]}
                   onPress={() => setSelectedTestament('Nuevo')}
                 >
                   <FontAwesome 
@@ -101,7 +97,7 @@ function BookSelector() {
                   <Text style={styles.changeTestamentButtonText}>Cambiar Testamento</Text>
                 </TouchableOpacity>
                 <ScrollView ref={scrollViewRef} style={styles.scrollView}>
-                  <Text style={styles.testamentoTitle}>
+                  <Text style={[styles.testamentoTitle, { color: colors.text }]}>
                     {selectedTestament} Testamento
                   </Text>
                   {(selectedTestament === 'Viejo' ? viejoTestamento : nuevoTestamento).map((book) => (
@@ -123,7 +119,7 @@ function BookSelector() {
               </View>
             )}
           </View>
-        </TouchableOpacity>
+        </View>
       </Modal>
     </View>
   );
@@ -231,34 +227,40 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    backgroundColor: 'rgba(0, 0, 0, 0.7)',
   },
   bookListContainer: {
-    width: '80%',
+    width: '90%',
     maxHeight: '80%',
     borderRadius: 10,
-    padding: 10,
+    padding: 20,
+    elevation: 5,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
   },
   testamentSelectionContainer: {
     flexDirection: 'row',
     justifyContent: 'space-around',
     alignItems: 'center',
     flexWrap: 'wrap',
+    marginBottom: 20,
   },
   testamentButton: {
-    width: 100,
-    height: 100,
+    width: 120,
+    height: 120,
     borderRadius: 10,
     justifyContent: 'center',
     alignItems: 'center',
-    margin: 5,
+    margin: 10,
   },
   testamentIcon: {
-    marginBottom: 5,
+    marginBottom: 10,
   },
   testamentButtonText: {
     color: 'white',
-    fontSize: 14,
+    fontSize: 16,
     textAlign: 'center',
   },
   changeTestamentButton: {
@@ -266,11 +268,12 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.light.tint,
     borderRadius: 5,
     alignItems: 'center',
-    marginBottom: 10,
+    marginBottom: 20,
   },
   changeTestamentButtonText: {
     fontSize: 16,
     color: 'white',
+    fontWeight: 'bold',
   },
   listContainer: {
     flex: 1,
@@ -279,16 +282,17 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   testamentoTitle: {
-    fontSize: 20,
+    fontSize: 22,
     fontWeight: 'bold',
-    marginBottom: 10,
+    marginBottom: 15,
+    textAlign: 'center',
   },
   bookItem: {
-    padding: 10,
+    padding: 15,
     borderRadius: 5,
     marginVertical: 5,
   },
   bookItemText: {
-    fontSize: 16,
+    fontSize: 18,
   },
 });

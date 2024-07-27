@@ -59,7 +59,7 @@ const useAppStore = create<AppStore>((set) => ({
   ttsConfig: {
     selectedVoice: '',
     speechRate: 1.06,
-    speechPitch: 0.79,
+    speechPitch: 0.45,
     voiceGender: 'female',
   },
   setTtsConfig: (config) => set((state) => ({

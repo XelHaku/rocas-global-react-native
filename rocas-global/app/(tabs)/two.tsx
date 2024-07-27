@@ -160,13 +160,13 @@ export default function TabTwoScreen() {
         />
 
         <Text style={styles.sectionSubtitle}>Tono: {ttsConfig.speechPitch.toFixed(2)}</Text>
-        <Slider
+        {/* <Slider
           style={styles.slider}
           minimumValue={0.5}
           maximumValue={2}
           value={ttsConfig.speechPitch}
           onValueChange={setSpeechPitch}
-        />
+        /> */}
       </View>
     </View>
   );
