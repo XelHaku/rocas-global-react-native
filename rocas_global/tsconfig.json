@@ -1,0 +1,30 @@
+{
+  "extends": "expo/tsconfig.base",
+  "compilerOptions": {
+    "jsx": "react",
+    "strict": true,
+    "paths": {
+      "@/*": [
+        "./*"
+      ],
+      "@models/*": [
+        "./models/*"
+      ],
+      "@utils/*": [
+        "./utils/*"
+      ],
+      "@openai/*": [
+        "./utils/openai*"
+      ],
+      "@cursos/*": [
+        "./cursos/*"
+      ]
+    }
+  },
+  "include": [
+    "**/*.ts",
+    "**/*.tsx",
+    ".expo/types/**/*.ts",
+    "expo-env.d.ts"
+  ]
+}
