@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { Link, Tabs } from 'expo-router';
-import { Pressable, View, Text, TouchableOpacity, ScrollView, Modal } from 'react-native';
+import { Pressable, View, Text, TouchableOpacity, ScrollView, Modal, FlatList } from 'react-native';
 import { StyleSheet } from 'react-native';
 import Colors from '@/constants/Colors';
 import { useColorScheme } from '@/components/useColorScheme';
@@ -15,23 +15,26 @@ function TabBarIcon(props: {
   color: string;
 }) {
   return <FontAwesome size={28} style={{ marginBottom: -3 }} {...props} />;
-}
+} 
 
 function BookSelector() {
   const { selectedBook, setSelectedBook } = useAppStore();
   const { colors } = useTheme();
   const [isListVisible, setIsListVisible] = useState(false);
   const [selectedTestament, setSelectedTestament] = useState<'Viejo' | 'Nuevo' | null>(null);
-  const scrollViewRef = useRef<ScrollView>(null);
 
   const selectedBookName = bibliaRV1960.find(book => book.archivo === selectedBook)?.nombre || 'Seleccionar Libro';
 
   useEffect(() => {
-    if (isListVisible && scrollViewRef.current && selectedTestament) {
-      const index = bibliaRV1960.findIndex(book => book.archivo === selectedBook && book.testamento === selectedTestament);
-      scrollViewRef.current.scrollTo({ y: index * 40, animated: false });
+    try {
+      if (bibliaRV1960.length === 0) {
+        throw new Error("No se han cargado los libros de la Biblia");
+      }
+      console.log("Número de libros cargados:", bibliaRV1960.length);
+    } catch (err) {
+      console.error("Error al cargar los libros:", err);
     }
-  }, [isListVisible, selectedBook, selectedTestament]);
+  }, []);
 
   const viejoTestamento = bibliaRV1960.filter(book => book.testamento === 'Viejo');
   const nuevoTestamento = bibliaRV1960.filter(book => book.testamento === 'Nuevo');
@@ -90,32 +93,31 @@ function BookSelector() {
               </View>
             ) : (
               <View style={styles.listContainer}>
-                <TouchableOpacity
-                  style={styles.changeTestamentButton}
-                  onPress={() => setSelectedTestament(null)}
-                >
-                  <Text style={styles.changeTestamentButtonText}>Cambiar Testamento</Text>
-                </TouchableOpacity>
-                <ScrollView ref={scrollViewRef} style={styles.scrollView}>
-                  <Text style={[styles.testamentoTitle, { color: colors.text }]}>
-                    {selectedTestament} Testamento
-                  </Text>
-                  {(selectedTestament === 'Viejo' ? viejoTestamento : nuevoTestamento).map((book) => (
+                <Text style={[styles.testamentoTitle, { color: colors.text }]}>
+                  {selectedTestament} Testamento
+                </Text>
+                <FlatList
+                  data={selectedTestament === 'Viejo' ? viejoTestamento : nuevoTestamento}
+                  keyExtractor={(item) => item.archivo}
+                  renderItem={({ item }) => (
                     <TouchableOpacity
-                      key={book.archivo}
                       style={[
                         styles.bookItem,
-                        selectedBook === book.archivo && { backgroundColor: colors.primary }
+                        selectedBook === item.archivo && { backgroundColor: colors.primary }
                       ]}
                       onPress={() => {
-                        setSelectedBook(book.archivo);
+                        setSelectedBook(item.archivo);
                         setIsListVisible(false);
+                        setSelectedTestament(null);  // Reset selectedTestament
                       }}
                     >
-                      <Text style={[styles.bookItemText, { color: colors.text }]}>{book.nombre}</Text>
+                      <Text style={[styles.bookItemText, { color: colors.text }]}>{item.nombre}</Text>
                     </TouchableOpacity>
-                  ))}
-                </ScrollView>
+                  )}
+                  initialNumToRender={20}
+                  maxToRenderPerBatch={20}
+                  windowSize={21}
+                />
               </View>
             )}
           </View>
@@ -275,9 +277,6 @@ const styles = StyleSheet.create({
     color: 'white',
     fontWeight: 'bold',
   },
-  listContainer: {
-    flex: 1,
-  },
   scrollView: {
     flex: 1,
   },
@@ -287,12 +286,15 @@ const styles = StyleSheet.create({
     marginBottom: 15,
     textAlign: 'center',
   },
+  listContainer: {
+    flex: 1,
+  },
   bookItem: {
     padding: 15,
-    borderRadius: 5,
-    marginVertical: 5,
+    borderBottomWidth: 1,
+    borderBottomColor: 'rgba(0,0,0,0.1)',
   },
   bookItemText: {
-    fontSize: 18,
+    fontSize: 16,
   },
 });
