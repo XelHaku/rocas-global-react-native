@@ -2,8 +2,8 @@ import React, { useState, useRef, useEffect } from 'react';
 import { StyleSheet, TextInput, FlatList, KeyboardAvoidingView, Platform, ActivityIndicator, TouchableOpacity, Image } from 'react-native';
 import { Text, View, useThemeColor } from '@/components/Themed';
 import { FontAwesome } from '@expo/vector-icons';
-import { getChat } from '@/utils/openai/getChat';
 import { useTheme } from '@react-navigation/native';
+import { getChat } from '@/utils/openai/getChat';
 
 type MessageType = { id: string; text: string; isUser: boolean };
 

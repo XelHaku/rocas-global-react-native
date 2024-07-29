@@ -2,8 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { StatusBar } from 'expo-status-bar';
 import { Platform, StyleSheet, ActivityIndicator, ScrollView } from 'react-native';
 import { Text, View } from "@/components/Themed";
-import { getChapterSummary } from '@/utils/openai/getChapterSummary';
 import useAppStore from '@/store/store';
+import { getChapterSummary } from '@/utils/openai/getChapterSummary';
 
 export default function ChapterModal() {
   const [summary, setSummary] = useState<any>(null);
