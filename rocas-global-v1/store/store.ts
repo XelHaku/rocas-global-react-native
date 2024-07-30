@@ -37,6 +37,8 @@ interface AppStore extends BibleState {
   setIsPlaying: (isPlaying: boolean) => void;
   isPaused: boolean;
   setIsPaused: (isPaused: boolean) => void;
+  currentPosition: number;
+  setCurrentPosition: (position: number) => void;
 }
 
 const useAppStore = create<AppStore>((set) => ({
@@ -80,6 +82,8 @@ const useAppStore = create<AppStore>((set) => ({
   setIsPlaying: (isPlaying) => set({ isPlaying }),
   isPaused: false,
   setIsPaused: (isPaused) => set({ isPaused }),
+  currentPosition: 0,
+  setCurrentPosition: (position) => set({ currentPosition: position }),
 }));
 
 export default useAppStore;
