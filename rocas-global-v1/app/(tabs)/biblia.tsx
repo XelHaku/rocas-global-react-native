@@ -1,4 +1,5 @@
-import React, { useCallback, useEffect, useRef } from 'react';
+//app/(tabs)/biblia.tsx
+import React, { useCallback, useRef } from 'react';
 import { StyleSheet, View, Text, TouchableOpacity, FlatList, Dimensions, ScrollView, SafeAreaView, Platform, StatusBar, Animated } from 'react-native';
 import { bibliaContent } from '@/constants/bibliaContent';
 import useAppStore from '@/store/store';
@@ -6,7 +7,6 @@ import { useFonts, Lora_400Regular, Lora_700Bold } from '@expo-google-fonts/lora
 import { useTheme } from '@react-navigation/native';
 import { FontAwesome } from '@expo/vector-icons';
 import TTSControls from '@/components/TTSControls';
-import { useTTS } from '@/hooks/useTTS';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
@@ -38,8 +38,6 @@ export default function Bible() {
 
   const fadeAnim = useRef(new Animated.Value(1)).current;
 
-  const { startSpeech, stopSpeech, isPlaying, isPaused } = useTTS();
-
   const processText = (text: string) => {
     return text.replace(/\/n/g, ' ').trim();
   };
@@ -49,7 +47,6 @@ export default function Bible() {
   };
 
   const handleChapterChange = useCallback((chapter: number) => {
-    stopSpeech();
     Animated.timing(fadeAnim, {
       toValue: 0,
       duration: 150,
@@ -62,7 +59,7 @@ export default function Bible() {
         useNativeDriver: false, 
       }).start();
     });
-  }, [setSelectedChapter, fadeAnim, stopSpeech]);
+  }, [setSelectedChapter, fadeAnim]);
 
   const goToNextChapter = useCallback(() => {
     if (selectedChapter < bookContent.length) {
@@ -74,11 +71,9 @@ export default function Bible() {
         const nextBook = bookKeys[currentBookIndex + 1];
         setSelectedBook(nextBook);
         handleChapterChange(1);
-      } else {
-        stopSpeech();
       }
     }
-  }, [selectedChapter, selectedBook, bookContent.length, handleChapterChange, setSelectedBook, stopSpeech]);
+  }, [selectedChapter, selectedBook, bookContent.length, handleChapterChange, setSelectedBook]);
 
   const goToPreviousChapter = useCallback(() => {
     if (selectedChapter > 1) {
@@ -174,6 +169,9 @@ export default function Bible() {
     </View>
   );
 }
+
+
+
 
 const styles = StyleSheet.create({
   container: {

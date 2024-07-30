@@ -9,15 +9,11 @@ interface TTSControlsProps {
 }
 
 const TTSControls: React.FC<TTSControlsProps> = ({ text }) => {
-  const { startSpeech, pauseSpeech, resumeSpeech, stopSpeech, isPlaying, isPaused } = useTTS();
+  const { startSpeech, stopSpeech, isPlaying } = useTTS();
 
-  const handlePlayPause = () => {
+  const handlePlayStop = () => {
     if (isPlaying) {
-      if (isPaused) {
-        resumeSpeech();
-      } else {
-        pauseSpeech();
-      }
+      stopSpeech();
     } else {
       startSpeech(text);
     }
@@ -32,20 +28,13 @@ const TTSControls: React.FC<TTSControlsProps> = ({ text }) => {
     <View style={styles.controlButtonsContainer}>
       <TouchableOpacity 
         style={styles.controlButton}
-        onPress={handlePlayPause}
+        onPress={handlePlayStop}
       >
         <FontAwesome 
-          name={isPlaying ? (isPaused ? "play" : "pause") : "play"} 
+          name={isPlaying ? "stop" : "play"} 
           size={20} 
           color="white" 
         />
-      </TouchableOpacity>
-
-      <TouchableOpacity 
-        style={styles.controlButton}
-        onPress={stopSpeech}
-      >
-        <FontAwesome name="stop" size={20} color="white" />
       </TouchableOpacity>
 
       <TouchableOpacity 
@@ -63,10 +52,10 @@ const styles = StyleSheet.create({
     position: 'absolute',
     bottom: 20,
     left: '50%',
-    transform: [{ translateX: -75 }],
+    transform: [{ translateX: -50 }],
     flexDirection: 'row',
     justifyContent: 'space-between',
-    width: 150,
+    width: 100,
   },
   controlButton: {
     backgroundColor: 'rgba(60, 70, 85, 0.3)',

@@ -9,7 +9,7 @@ import 'react-native-reanimated';
 import { useColorScheme } from '@/components/useColorScheme';
 import React from 'react';
 import useAppStore from '@/store/store';
-import Onboarding from '@/components/Onboarding'; // Importa el componente de Onboarding
+import Onboarding from '@/components/Onboarding';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 

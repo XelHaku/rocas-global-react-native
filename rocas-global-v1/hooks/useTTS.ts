@@ -13,9 +13,6 @@ export const useTTS = () => {
     ttsConfig,
     isPlaying,
     setIsPlaying,
-    isPaused,
-    setIsPaused,
-    currentPosition,
     setCurrentPosition
   } = useAppStore();
 
@@ -55,12 +52,10 @@ export const useTTS = () => {
         utterance.pitch = ttsConfig.speechPitch;
         utterance.onend = () => {
           setIsPlaying(false);
-          setIsPaused(false);
           setCurrentPosition(0);
         };
         window.speechSynthesis.speak(utterance);
         setIsPlaying(true);
-        setIsPaused(false);
       } else {
         console.log('Web Speech API is not supported in this browser');
         alert('La síntesis de voz no está disponible en este navegador');
@@ -77,40 +72,16 @@ export const useTTS = () => {
         pitch: ttsConfig.speechPitch,
       });
       setIsPlaying(true);
-      setIsPaused(false);
       setCurrentPosition(0);
       Tts.addEventListener('tts-finish', () => {
         setIsPlaying(false);
-        setIsPaused(false);
         setCurrentPosition(0);
       });
     } else {
       console.log('TTS is not available on this platform');
       alert('La síntesis de voz no está disponible en esta plataforma');
     }
-  }, [ttsConfig, ttsAvailable, setIsPlaying, setIsPaused, setCurrentPosition]);
-
-  const pauseSpeech = useCallback(() => {
-    if (Platform.OS === 'web') {
-      if ('speechSynthesis' in window) {
-        window.speechSynthesis.pause();
-      }
-    } else if (Tts) {
-      Tts.pause();
-    }
-    setIsPaused(true);
-  }, [setIsPaused]);
-
-  const resumeSpeech = useCallback(() => {
-    if (Platform.OS === 'web') {
-      if ('speechSynthesis' in window) {
-        window.speechSynthesis.resume();
-      }
-    } else if (Tts) {
-      Tts.resume();
-    }
-    setIsPaused(false);
-  }, [setIsPaused]);
+  }, [ttsConfig, ttsAvailable, setIsPlaying, setCurrentPosition]);
 
   const stopSpeech = useCallback(() => {
     if (Platform.OS === 'web') {
@@ -121,17 +92,12 @@ export const useTTS = () => {
       Tts.stop();
     }
     setIsPlaying(false);
-    setIsPaused(false);
     setCurrentPosition(0);
-  }, [setIsPlaying, setIsPaused, setCurrentPosition]);
+  }, [setIsPlaying, setCurrentPosition]);
 
   return {
     startSpeech,
-    pauseSpeech,
-    resumeSpeech,
     stopSpeech,
     isPlaying,
-    isPaused,
-    currentPosition,
   };
 };
