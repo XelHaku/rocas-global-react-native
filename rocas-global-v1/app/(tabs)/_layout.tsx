@@ -1,8 +1,7 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { Link, Tabs } from 'expo-router';
-import { Pressable, View, Text, TouchableOpacity, ScrollView, Modal, FlatList } from 'react-native';
-import { StyleSheet } from 'react-native';
+import { Pressable, View, Text, TouchableOpacity, Modal, FlatList, StyleSheet } from 'react-native';
 import Colors from '@/constants/Colors';
 import { useColorScheme } from '@/components/useColorScheme';
 import { useClientOnlyValue } from '@/components/useClientOnlyValue';
@@ -10,115 +9,101 @@ import useAppStore from '@/store/store';
 import { bibliaRV1960 } from '@/constants/bibliaRV1960';
 import { useTheme } from '@react-navigation/native';
 
-function TabBarIcon(props: {
-  name: React.ComponentProps<typeof FontAwesome>['name'];
-  color: string;
-}) {
+function TabBarIcon(props: { name: React.ComponentProps<typeof FontAwesome>['name']; color: string }) {
   return <FontAwesome size={28} style={{ marginBottom: -3 }} {...props} />;
-} 
+}
+
+interface Libro {
+  archivo: string;
+  nombre: string;
+  testamento: 'Viejo' | 'Nuevo';
+}
 
 function BookSelector() {
   const { selectedBook, setSelectedBook } = useAppStore();
   const { colors } = useTheme();
   const [isListVisible, setIsListVisible] = useState(false);
   const [selectedTestament, setSelectedTestament] = useState<'Viejo' | 'Nuevo' | null>(null);
-
-  const selectedBookName = bibliaRV1960.find(book => book.archivo === selectedBook)?.nombre || 'Seleccionar Libro';
+  const [libros, setLibros] = useState<Libro[]>([]);
 
   useEffect(() => {
-    try {
-      if (bibliaRV1960.length === 0) {
-        throw new Error("No se han cargado los libros de la Biblia");
-      }
-      console.log("Número de libros cargados:", bibliaRV1960.length);
-    } catch (err) {
-      console.error("Error al cargar los libros:", err);
-    }
+    // Filtra y ajusta los tipos del array bibliaRV1960 antes de asignarlo a libros
+    const adjustedBooks: Libro[] = bibliaRV1960.map(book => ({
+      archivo: book.archivo,
+      nombre: book.nombre,
+      testamento: book.testamento as 'Viejo' | 'Nuevo',
+    }));
+    setLibros(adjustedBooks);
   }, []);
 
-  const viejoTestamento = bibliaRV1960.filter(book => book.testamento === 'Viejo');
-  const nuevoTestamento = bibliaRV1960.filter(book => book.testamento === 'Nuevo');
+  useEffect(() => {
+    if (libros.length > 0) {
+      console.log("Número de libros cargados:", libros.length);
+    }
+  }, [libros]);
+
+  const selectedBookName = libros.find(book => book.archivo === selectedBook)?.nombre || 'Seleccionar Libro';
+
+  const viejoTestamento = libros.filter(book => book.testamento === 'Viejo');
+  const nuevoTestamento = libros.filter(book => book.testamento === 'Nuevo');
+
+  const handlePressTestament = (testament: 'Viejo' | 'Nuevo') => {
+    setSelectedTestament(testament);
+    setIsListVisible(true);
+  };
+
+  const handleSelectBook = (archivo: string) => {
+    setSelectedBook(archivo);
+    setIsListVisible(false);
+    setSelectedTestament(null);
+  };
 
   return (
     <View style={styles.bookSelectorContainer}>
-      <TouchableOpacity onPress={() => setIsListVisible(true)} style={styles.bookSelectorButton}>
-        <FontAwesome 
-          name="book" 
-          size={20} 
-          color={colors.text}
-          style={styles.bookIcon}
-        />
+      <TouchableOpacity
+        style={[styles.bookSelectorButton, { backgroundColor: colors.background }]}
+        onPress={() => setIsListVisible(true)}
+      >
         <Text style={[styles.selectedBookText, { color: colors.text }]}>{selectedBookName}</Text>
-        <FontAwesome 
-          name="chevron-down" 
-          size={16} 
-          color={colors.text}
-          style={styles.chevronIcon}
-        />
+        <FontAwesome name="book" size={24} color={colors.primary} />
       </TouchableOpacity>
+
       <Modal
-        visible={isListVisible}
+        animationType="slide"
         transparent={true}
-        animationType="fade"
+        visible={isListVisible}
         onRequestClose={() => setIsListVisible(false)}
       >
         <View style={styles.modalOverlay}>
-          <View style={[styles.bookListContainer, { backgroundColor: colors.card }]}>
-            {selectedTestament === null ? (
-              <View style={styles.testamentSelectionContainer}>
-                <TouchableOpacity
-                  style={[styles.testamentButton, { backgroundColor: '#D4AF37' }]}
-                  onPress={() => setSelectedTestament('Viejo')}
-                >
-                  <FontAwesome 
-                    name="book" 
-                    size={24} 
-                    color="white"
-                    style={styles.testamentIcon}
-                  />
-                  <Text style={styles.testamentButtonText}>Viejo Testamento</Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                  style={[styles.testamentButton, { backgroundColor: '#D4AF37' }]}
-                  onPress={() => setSelectedTestament('Nuevo')}
-                >
-                  <FontAwesome 
-                    name="book" 
-                    size={24} 
-                    color="white"
-                    style={styles.testamentIcon}
-                  />
-                  <Text style={styles.testamentButtonText}>Nuevo Testamento</Text>
-                </TouchableOpacity>
-              </View>
+          <View style={[styles.bookListContainer, { backgroundColor: colors.background }]}>
+            {!selectedTestament ? (
+                <View style={styles.testamentSelectionContainer}>
+                  <TouchableOpacity
+                    onPress={() => handlePressTestament('Viejo')}
+                    style={[styles.testamentButton]}
+                  >
+                    <Text style={styles.testamentButtonText}>Viejo Testamento</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    onPress={() => handlePressTestament('Nuevo')}
+                    style={[styles.testamentButton]}
+                  >
+                    <Text style={styles.testamentButtonText}>Nuevo Testamento</Text>
+                  </TouchableOpacity>
+                </View>
             ) : (
-              <View style={styles.listContainer}>
-                <Text style={[styles.testamentoTitle, { color: colors.text }]}>
-                  {selectedTestament} Testamento
-                </Text>
-                <FlatList
-                  data={selectedTestament === 'Viejo' ? viejoTestamento : nuevoTestamento}
-                  keyExtractor={(item) => item.archivo}
-                  renderItem={({ item }) => (
-                    <TouchableOpacity
-                      style={[
-                        styles.bookItem,
-                        selectedBook === item.archivo && { backgroundColor: colors.primary }
-                      ]}
-                      onPress={() => {
-                        setSelectedBook(item.archivo);
-                        setIsListVisible(false);
-                        setSelectedTestament(null);  // Reset selectedTestament
-                      }}
-                    >
-                      <Text style={[styles.bookItemText, { color: colors.text }]}>{item.nombre}</Text>
-                    </TouchableOpacity>
-                  )}
-                  initialNumToRender={20}
-                  maxToRenderPerBatch={20}
-                  windowSize={21}
-                />
-              </View>
+              <FlatList
+                data={selectedTestament === 'Viejo' ? viejoTestamento : nuevoTestamento}
+                keyExtractor={(item) => item.archivo}
+                renderItem={({ item }) => (
+                  <TouchableOpacity
+                    onPress={() => handleSelectBook(item.archivo)}
+                    style={[styles.bookItem, { backgroundColor: colors.background }]}
+                  >
+                    <Text style={{ color: colors.text }}>{item.nombre}</Text>
+                  </TouchableOpacity>
+                )}
+              />
             )}
           </View>
         </View>
@@ -171,7 +156,6 @@ export default function TabLayout() {
           ),
         }}
       />
-
       <Tabs.Screen
         name="index"
         options={{
@@ -206,41 +190,41 @@ export default function TabLayout() {
 
 const styles = StyleSheet.create({
   bookSelectorContainer: {
-    position: 'relative',
     flexDirection: 'row',
     alignItems: 'center',
   },
   bookSelectorButton: {
     flexDirection: 'row',
     alignItems: 'center',
-    padding: 5,
-  },
-  bookIcon: {
-    marginRight: 5,
+    padding: 15,
+    borderBottomWidth: 1,
+    borderBottomColor: 'transparent',
   },
   selectedBookText: {
     fontSize: 16,
-    marginRight: 5,
-  },
-  chevronIcon: {
-    marginLeft: 5,
+    marginRight: 10,
   },
   modalOverlay: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: 'rgba(0, 0, 0, 0.7)',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
   },
   bookListContainer: {
     width: '90%',
     maxHeight: '80%',
     borderRadius: 10,
-    padding: 20,
+    padding: 10,
     elevation: 5,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
+  },
+  bookItem: {
+    padding: 15,
+    borderBottomWidth: 1,
+    borderBottomColor: 'transparent',
   },
   testamentSelectionContainer: {
     flexDirection: 'row',
@@ -256,45 +240,11 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     margin: 10,
-  },
-  testamentIcon: {
-    marginBottom: 10,
+    backgroundColor: 'gold', // Color dorado
   },
   testamentButtonText: {
-    color: 'white',
+    color: 'black', // Color del texto, puedes ajustar el contraste según sea necesario
     fontSize: 16,
     textAlign: 'center',
-  },
-  changeTestamentButton: {
-    padding: 10,
-    backgroundColor: Colors.light.tint,
-    borderRadius: 5,
-    alignItems: 'center',
-    marginBottom: 20,
-  },
-  changeTestamentButtonText: {
-    fontSize: 16,
-    color: 'white',
-    fontWeight: 'bold',
-  },
-  scrollView: {
-    flex: 1,
-  },
-  testamentoTitle: {
-    fontSize: 22,
-    fontWeight: 'bold',
-    marginBottom: 15,
-    textAlign: 'center',
-  },
-  listContainer: {
-    flex: 1,
-  },
-  bookItem: {
-    padding: 15,
-    borderBottomWidth: 1,
-    borderBottomColor: 'rgba(0,0,0,0.1)',
-  },
-  bookItemText: {
-    fontSize: 16,
   },
 });
