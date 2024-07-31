@@ -1,18 +1,19 @@
-//app/(tabs)/biblia.tsx
 import React, { useCallback, useRef } from 'react';
-import { StyleSheet, View, Text, TouchableOpacity, FlatList, Dimensions, ScrollView, SafeAreaView, Platform, StatusBar, Animated } from 'react-native';
+import { StyleSheet, View, Text, TouchableOpacity, FlatList, Dimensions, ScrollView, SafeAreaView, Platform, StatusBar, Animated, ImageBackground } from 'react-native';
 import { bibliaContent } from '@/constants/bibliaContent';
 import useAppStore from '@/store/store';
 import { useFonts, Lora_400Regular, Lora_700Bold } from '@expo-google-fonts/lora';
 import { useTheme } from '@react-navigation/native';
-import { FontAwesome } from '@expo/vector-icons';
+import { FontAwesome5 } from '@expo/vector-icons';
 import TTSControls from '@/components/TTSControls';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
 const getColors = (theme: 'light' | 'dark') => ({
-  background: theme === 'light' ? '#FFFFFF' : '#121212',
-  card: theme === 'light' ? '#F2E8C9' : '#2C2C2C',
+  background: theme === 'light' ? '#F4E9D1' : '#3C2F1B',
+  card: theme === 'light' ? 'rgba(244, 233, 209, 0.9)' : 'rgba(60, 47, 27, 0.9)',
+  text: theme === 'light' ? '#5C4033' : '#D2B48C',
+  accent: theme === 'light' ? '#D4AF37' : '#FFD700',
 });
 
 export default function Bible() {
@@ -92,12 +93,12 @@ export default function Bible() {
 
   const renderVerse = useCallback(({ item: verse, index: verseIndex }: { item: string, index: number }) => (
     <TouchableOpacity onPress={() => toggleFavoriteVerse(verse)}>
-      <View style={[styles.verse, favoriteVerses.includes(verse) && { backgroundColor: colors.notification }]}>
-        <Text style={[styles.verseNumber, { color: colors.text }]}>{verseIndex + 1}</Text>
-        <Text style={[styles.verseText, { color: colors.text }]}>{processText(verse)}</Text>
+      <View style={[styles.verse, favoriteVerses.includes(verse) && { backgroundColor: 'rgba(212, 175, 55, 0.2)' }]}>
+        <Text style={[styles.verseNumber, { color: customColors.accent }]}>{verseIndex + 1}</Text>
+        <Text style={[styles.verseText, { color: customColors.text }]}>{processText(verse)}</Text>
       </View>
     </TouchableOpacity>
-  ), [favoriteVerses, toggleFavoriteVerse, colors]);
+  ), [favoriteVerses, toggleFavoriteVerse, customColors]);
 
   if (!fontsLoaded) {
     return null;
@@ -109,9 +110,12 @@ export default function Bible() {
   const fullText = `Libro ${bookName}, capítulo ${selectedChapter}. ${processedText}`;
 
   return (
-    <View style={[styles.container, { backgroundColor: customColors.background }]}>
+    <ImageBackground 
+      style={styles.container}
+    >
       <SafeAreaView style={styles.safeArea}>
-        <View style={styles.chapterPickerContainer}>
+        <View style={styles.header}>
+          <Text style={styles.bookTitle}>{getBookName(selectedBook)}</Text>
           <ScrollView
             horizontal
             showsHorizontalScrollIndicator={false}
@@ -123,38 +127,33 @@ export default function Bible() {
                 key={index + 1}
                 style={[
                   styles.chapterItem,
-                  selectedChapter === index + 1 && [styles.selectedChapterItem, { borderBottomColor: colors.primary }],
+                  selectedChapter === index + 1 && [styles.selectedChapterItem, { backgroundColor: customColors.accent }],
                 ]}
                 onPress={() => handleChapterChange(index + 1)}
               >
-                <Text style={[styles.chapterText, { color: colors.text }]}>{index + 1}</Text>
+                <Text style={[styles.chapterText, { color: selectedChapter === index + 1 ? '#5C4033' : customColors.text }]}>{index + 1}</Text>
               </TouchableOpacity>
             ))}
           </ScrollView>
         </View>
 
-        <View style={styles.contentContainerWrapper}>
-          <View style={[styles.contentContainerBeforeAfter, styles.contentContainerBefore, { backgroundColor: customColors.card }]} />
-          <View style={[styles.contentContainerBeforeAfter, styles.contentContainerAfter, { backgroundColor: customColors.card }]} />
-          <Animated.View style={{ opacity: fadeAnim, flex: 1 }}>
-            <FlatList
-              style={styles.chapterContainer}
-              contentContainerStyle={[styles.chapterContentContainer, { 
-                backgroundColor: customColors.card,
-                borderColor: colors.border,
-              }]}
-              data={bookContent[selectedChapter - 1]}
-              renderItem={renderVerse}
-              keyExtractor={(_, index) => `verse-${index}`}
-            />
-          </Animated.View>
-        </View>
+        <Animated.View style={[styles.contentContainer, { opacity: fadeAnim }]}>
+          <FlatList
+            style={styles.chapterContainer}
+            contentContainerStyle={[styles.chapterContentContainer, { 
+              backgroundColor: customColors.card,
+            }]}
+            data={bookContent[selectedChapter - 1]}
+            renderItem={renderVerse}
+            keyExtractor={(_, index) => `verse-${index}`}
+          />
+        </Animated.View>
 
         <TouchableOpacity 
           style={[styles.floatingButton, styles.floatingButtonLeft]}
           onPress={goToPreviousChapter}
         >
-          <FontAwesome name="chevron-left" size={24} color="white" />
+          <FontAwesome5 name="chevron-left" size={24} color={customColors.accent} />
         </TouchableOpacity>
 
         <TTSControls text={fullText} />
@@ -163,15 +162,12 @@ export default function Bible() {
           style={[styles.floatingButton, styles.floatingButtonRight]}
           onPress={goToNextChapter}
         >
-          <FontAwesome name="chevron-right" size={24} color="white" />
+          <FontAwesome5 name="chevron-right" size={24} color={customColors.accent} />
         </TouchableOpacity>
       </SafeAreaView>
-    </View>
+    </ImageBackground>
   );
 }
-
-
-
 
 const styles = StyleSheet.create({
   container: {
@@ -181,63 +177,68 @@ const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
   },
-  chapterPickerContainer: {
-    height: '7%',
-    justifyContent: 'center',
+  header: {
+    padding: 15,
+    paddingBottom: 5,
+    backgroundColor: 'rgba(244, 233, 209, 0.7)',
+  },
+  bookTitle: {
+    fontFamily: 'Lora_700Bold',
+    fontSize: 28,
+    color: '#0000',
+    textAlign: 'center',
+    marginBottom: 10,
+    textShadowColor: 'rgba(0, 0, 0, 0.75)',
+    textShadowOffset: {width: -1, height: 1},
+    textShadowRadius: 0
   },
   chapterPicker: {
-    maxHeight: 40,
+    maxHeight: 50,
   },
   chapterPickerContent: {
     paddingHorizontal: 10,
   },
-  contentContainerWrapper: {
+  contentContainer: {
     flex: 1,
-    marginHorizontal: '2%',
+    marginHorizontal: '4%',
     marginVertical: '2%',
+    borderRadius: 15,
     overflow: 'hidden',
+    elevation: 5,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
   },
   chapterContainer: {
     flex: 1,
-    width: SCREEN_WIDTH * 0.96,
   },
   chapterContentContainer: {
     padding: '5%',
     paddingBottom: '10%',
-    borderRadius: 8,
-    elevation: 8,
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 5,
-    borderWidth: 1,
-    borderStyle: 'solid',
-  },
-  contentContainerBeforeAfter: {
-    position: 'absolute',
-    left: '2%',
-    right: '2%',
-    height: 10,
-  },
-  contentContainerBefore: {
-    top: -5,
-    transform: [{ rotate: '1deg' }],
-  },
-  contentContainerAfter: {
-    bottom: -5,
-    transform: [{ rotate: '-1deg' }],
+    borderRadius: 15,
   },
   verse: {
     flexDirection: 'row',
-    marginBottom: '2%',
+    marginBottom: '4%',
+    padding: 10,
+    borderRadius: 8,
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
   },
   verseNumber: {
     fontWeight: 'bold',
-    marginRight: '2%',
+    marginRight: '3%',
     fontFamily: 'Lora_700Bold',
+    fontSize: 18,
   },
   verseText: {
     flex: 1,
     fontFamily: 'Lora_400Regular',
+    fontSize: 18,
+    lineHeight: 28,
   },
   chapterItem: {
     width: 40,
@@ -245,17 +246,21 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     marginHorizontal: 5,
+    borderRadius: 20,
+    backgroundColor: 'rgba(212, 175, 55, 0.2)',
   },
   chapterText: {
     fontFamily: 'Lora_700Bold',
+    fontSize: 16,
   },
   selectedChapterItem: {
-    borderBottomWidth: 2,
+    borderWidth: 2,
+    borderColor: '#D4AF37',
   },
   floatingButton: {
     position: 'absolute',
     bottom: 20,
-    backgroundColor: 'rgba(60, 70, 85, 0.3)',
+    backgroundColor: 'rgba(244, 233, 209, 0.7)',
     width: 50,
     height: 50,
     borderRadius: 25,
