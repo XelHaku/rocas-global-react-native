@@ -12,24 +12,29 @@
     "lint": "expo lint"
   },
   "jest": {
-    "preset": "jest-expo"
+    "preset": "jest-expo",
+    "setupFiles": [
+      "./mocks.js"
+    ]
   },
   "dependencies": {
+    "@ethersproject/shims": "^5.7.0",
     "@expo-google-fonts/inter": "^0.2.3",
     "@expo-google-fonts/lora": "^0.2.3",
     "@expo/vector-icons": "^14.0.2",
-    "@react-native-async-storage/async-storage": "^1.24.0",
+    "@react-native-async-storage/async-storage": "1.23.1",
     "@react-native-community/slider": "4.5.2",
     "@react-native-picker/picker": "2.7.5",
     "@react-navigation/native": "^6.0.2",
-    "@web3auth/react-native-sdk": "^7.0.0",
-    "expo": "~51.0.22",
-    "@ethersproject/shims": "^5.7.0",
     "@toruslabs/react-native-web-browser": "^1.1.0",
-    "@web3auth/ethereum-provider": "^8.6.2",
-    "react-native-encrypted-storage": "^4.0.3",
-
-    "ethers": "^6.13.0",
+    "@web3auth/base": "^8.12.0",
+    "@web3auth/ethereum-mpc-provider": "^8.12.0",
+    "@web3auth/ethereum-provider": "^8.12.0",
+    "@web3auth/modal": "^8.12.0",
+    "@web3auth/mpc-core-kit": "^2.3.3",
+    "@web3auth/react-native-sdk": "^7.0.0",
+    "ethers": "^6.13.2",
+    "expo": "~51.0.22",
     "expo-application": "~5.9.1",
     "expo-constants": "~16.0.2",
     "expo-crypto": "~13.0.2",
@@ -47,6 +52,7 @@
     "react-native": "0.74.3",
     "react-native-app-intro-slider": "^4.0.4",
     "react-native-dotenv": "^3.4.11",
+    "react-native-encrypted-storage": "^4.0.3",
     "react-native-gesture-handler": "~2.16.1",
     "react-native-get-random-values": "^1.11.0",
     "react-native-onboarding-swiper": "^1.2.0",
@@ -64,28 +70,28 @@
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",
-    "@types/jest": "^29.5.12",
     "@babel/preset-env": "^7.20.0",
     "@babel/runtime": "^7.20.0",
     "@react-native/babel-preset": "0.74.84",
     "@react-native/eslint-config": "0.74.84",
     "@react-native/metro-config": "0.74.84",
     "@react-native/typescript-config": "0.74.84",
+    "@types/jest": "^29.5.12",
     "@types/react": "~18.2.45",
     "@types/react-test-renderer": "^18.0.7",
-    "jest": "^29.2.1",
-    "jest-expo": "~51.0.3",
-    "react-test-renderer": "18.2.0",
-    "typescript": "~5.3.3",
     "babel-jest": "^29.6.3",
     "buffer": "^6.0.3",
     "crypto-browserify": "^3.12.0",
     "empty-module": "^0.0.2",
     "eslint": "^8.19.0",
+    "jest": "^29.2.1",
+    "jest-expo": "~51.0.3",
     "prettier": "2.8.8",
     "process": "^0.11.10",
     "react-native-get-random-values": "^1.11.0",
-    "readable-stream": "^4.5.2"
+    "react-test-renderer": "18.2.0",
+    "readable-stream": "^4.5.2",
+    "typescript": "~5.3.3"
   },
   "private": true
 }
