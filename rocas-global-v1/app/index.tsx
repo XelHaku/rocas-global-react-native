@@ -246,7 +246,7 @@ export default function Login() {
   return (
     <ScrollView contentContainerStyle={styles.container}>
       <View>
-        <Text style={styles.header}>Web3Auth Example</Text>
+        <Text style={styles.header}>Web3Auth</Text>
         {userInfo ? loggedInView : unloggedInView}
         <Text style={styles.console}>{consoleOutput}</Text>
       </View>
