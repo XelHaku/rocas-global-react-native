@@ -1,85 +1,36 @@
-import FontAwesome from '@expo/vector-icons/FontAwesome';
-import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
-import { useFonts } from 'expo-font';
-import { Stack } from 'expo-router';
-import * as SplashScreen from 'expo-splash-screen';
 import { useEffect } from 'react';
-import 'react-native-reanimated';
-
-import { useColorScheme } from '@/components/useColorScheme';
-import React from 'react';
+import { Stack, useRouter } from 'expo-router';
 import useAppStore from '@/store/store';
-import Onboarding from '@/components/Onboarding';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-
-
-// Your root component
-export {
-  ErrorBoundary,
-} from 'expo-router';
-
-export const unstable_settings = {
-  initialRouteName: '(tabs)',
-};
-
-SplashScreen.preventAutoHideAsync();
+import { web3auth } from '@/hooks/web3AuthConfig';
 
 export default function RootLayout() {
-  const [loaded, error] = useFonts({
-    SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
-    ...FontAwesome.font,
-  });
-
-  const { isFirstLaunch, setFirstLaunch } = useAppStore();
+  const { isLoggedIn, login } = useAppStore();
+  const router = useRouter();
 
   useEffect(() => {
-    if (error) throw error;
-  }, [error]);
-
-  useEffect(() => {
-    if (loaded) {
-      SplashScreen.hideAsync();
-    }
-  }, [loaded]);
-
-  useEffect(() => {
-    AsyncStorage.getItem('alreadyLaunched').then((value) => {
-      if (value == null) {
-        AsyncStorage.setItem('alreadyLaunched', 'true');
-        setFirstLaunch(true);
-      } else {
-        setFirstLaunch(false);
+    const checkAuth = async () => {
+      try {
+        await web3auth.init();
+        if (web3auth.privKey) {
+          const userInfo = web3auth.userInfo();
+          login(userInfo?.email || 'Unknown');
+        } else if (!isLoggedIn) {
+          router.replace('/login');
+        }
+      } catch (error) {
+        console.error("Auth check error:", error);
+        router.replace('/login');
       }
-    });
-  }, [setFirstLaunch]);
+    };
 
-  if (!loaded || isFirstLaunch === undefined) {
-    return null;
-  }
-
-  return <RootLayoutNav />;
-}
-
-function RootLayoutNav() {
-  const colorScheme = useColorScheme();
-  const { theme, setTheme, isFirstLaunch, setFirstLaunch } = useAppStore();
-
-  useEffect(() => {
-    setTheme(colorScheme as 'light' | 'dark');
-  }, [colorScheme, setTheme]);
-
-  if (isFirstLaunch) {
-    return <Onboarding onDone={() => setFirstLaunch(false)} />;
-  }
+    checkAuth();
+  }, [isLoggedIn, login, router]);
 
   return (
-    // <PrivyProvider appId={'clyah1e3600pz1qdwmit0j2a2'}>
-    <ThemeProvider value={theme === "dark" ? DarkTheme : DefaultTheme}>
-      <Stack>
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="modal" options={{ presentation: "modal" }} />
-      </Stack>
-    </ThemeProvider>
-    // </PrivyProvider>
+    <Stack>
+      <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+      <Stack.Screen name="modal" options={{ presentation: "modal" }} />
+      <Stack.Screen name="login" options={{ headerShown: false }} />
+    </Stack>
   );
 }
