@@ -1,4 +1,4 @@
-import React, { useCallback, useRef, useState } from 'react';
+import React, { useCallback, useRef, useState, useEffect } from 'react';
 import { StyleSheet, View, Text, TouchableOpacity, FlatList, Dimensions, ScrollView, SafeAreaView, Platform, StatusBar, Animated, ImageBackground, Share, Clipboard, Alert } from 'react-native';
 import { bibliaContent } from '@/constants/bibliaContent';
 import useAppStore from '@/store/store';
@@ -53,6 +53,8 @@ export default function Bible() {
     setSelectedBook,
     toggleFavoriteVerse,
     theme: appTheme,
+    ttsConfig,
+    setSpeechRate,
   } = useAppStore();
 
   const { colors } = useTheme();
@@ -264,10 +266,12 @@ export default function Bible() {
         <TextSettingsControl
           fontSize={fontSize}
           lineHeight={lineHeight}
+          speechRate={ttsConfig.speechRate}
           onIncreaseFontSize={increaseFontSize}
           onDecreaseFontSize={decreaseFontSize}
           onIncreaseLineHeight={increaseLineHeight}
           onDecreaseLineHeight={decreaseLineHeight}
+          onChangeSpeechRate={setSpeechRate}
           isVisible={isTextSettingsVisible}
           onClose={() => setIsTextSettingsVisible(false)}
         />
@@ -298,7 +302,7 @@ const styles = StyleSheet.create({
     textShadowColor: 'rgba(0, 0, 0, 0.75)',
     textShadowOffset: {width: -1, height: 1},
     textShadowRadius: 0,
-    color: '#D4AF37', // Color dorado para el título
+    color: '#D4AF37',
   },
   chapterPicker: {
     maxHeight: 50,
@@ -352,7 +356,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     marginHorizontal: 5,
     borderRadius: 20,
-    borderColor: '#D4AF37', // Borde dorado
+    borderColor: '#D4AF37',
     backgroundColor: 'rgba(212, 175, 55, 0.2)',
   },
   chapterText: {
@@ -360,12 +364,12 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   selectedChapterText: {
-    color: '#000000', // Texto negro para el capítulo seleccionado
+    color: '#000000',
   },
   selectedChapterItem: {
     borderWidth: 2,
     borderColor: '#D4AF37',
-    backgroundColor: '#D4AF37', // Fondo dorado para el capítulo seleccionado
+    backgroundColor: '#D4AF37',
   },
   floatingButton: {
     position: 'absolute',

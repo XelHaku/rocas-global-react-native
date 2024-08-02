@@ -1,14 +1,17 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Modal } from 'react-native';
 import { FontAwesome5 } from '@expo/vector-icons';
+import Slider from '@react-native-community/slider';
 
 interface TextSettingsControlProps {
   fontSize: number;
   lineHeight: number;
+  speechRate: number;
   onIncreaseFontSize: () => void;
   onDecreaseFontSize: () => void;
   onIncreaseLineHeight: () => void;
   onDecreaseLineHeight: () => void;
+  onChangeSpeechRate: (value: number) => void;
   isVisible: boolean;
   onClose: () => void;
 }
@@ -16,10 +19,12 @@ interface TextSettingsControlProps {
 const TextSettingsControl: React.FC<TextSettingsControlProps> = ({
   fontSize,
   lineHeight,
+  speechRate,
   onIncreaseFontSize,
   onDecreaseFontSize,
   onIncreaseLineHeight,
   onDecreaseLineHeight,
+  onChangeSpeechRate,
   isVisible,
   onClose,
 }) => {
@@ -53,6 +58,19 @@ const TextSettingsControl: React.FC<TextSettingsControlProps> = ({
                 <FontAwesome5 name="plus" size={16} color="#000" />
               </TouchableOpacity>
             </View>
+          </View>
+          <View style={styles.controlGroup}>
+            <Text style={styles.label}>Velocidad de lectura: {speechRate.toFixed(2)}</Text>
+            <Slider
+              style={styles.slider}
+              minimumValue={0.1}
+              maximumValue={2}
+              value={speechRate}
+              onValueChange={onChangeSpeechRate}
+              thumbTintColor="#D4AF37"
+              minimumTrackTintColor="#D4AF37"
+              maximumTrackTintColor="#000000"
+            />
           </View>
           <TouchableOpacity onPress={onClose} style={styles.closeButton}>
             <FontAwesome5 name="times" size={20} color="#000" />
@@ -88,6 +106,7 @@ const styles = StyleSheet.create({
   controlGroup: {
     alignItems: 'center',
     marginBottom: 20,
+    width: '100%',
   },
   label: {
     fontSize: 16,
@@ -107,6 +126,10 @@ const styles = StyleSheet.create({
     right: 10,
     top: 10,
     padding: 10,
+  },
+  slider: {
+    width: '100%',
+    height: 40,
   },
 });
 
