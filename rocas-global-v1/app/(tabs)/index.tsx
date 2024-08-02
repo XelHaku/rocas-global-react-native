@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { StyleSheet, TextInput, FlatList, KeyboardAvoidingView, Platform, ActivityIndicator, TouchableOpacity, Image } from 'react-native';
-import { Text, View, useThemeColor } from '@/components/Themed';
+import { Text, View } from '@/components/Themed';
 import { FontAwesome } from '@expo/vector-icons';
 import { useTheme } from '@react-navigation/native';
 import { getChat } from '@/utils/openai/getChat';
@@ -29,7 +29,7 @@ export default function TabOneScreen() {
   const [conversationStarted, setConversationStarted] = useState(false);
   const flatListRef = useRef<FlatList<MessageType>>(null);
   const { colors, dark } = useTheme();
-  const backgroundColor = useThemeColor({ light: '#f0f0f0', dark: '#1c1c1e' }, 'background');
+  const backgroundColor = dark ? '#000000' : '#FFFFFF';
 
   useEffect(() => {
     if (flatListRef.current) {
@@ -89,15 +89,19 @@ export default function TabOneScreen() {
       style={[styles.container, { backgroundColor }]}
       keyboardVerticalOffset={Platform.OS === "ios" ? 64 : 0}
     >
+    
       {!conversationStarted ? (
-        <View style={styles.welcomeContainer}>
+        <View style={[styles.welcomeContainer, { backgroundColor }]}>
           <Image
             source={require('@/assets/images/chatbot.png')}
             style={[styles.botImage, { opacity: dark ? 0.7 : 1 }]}
           />
           <Text style={[styles.welcomeText, { color: colors.text }]}>¡Bienvenido! Estoy aquí para ayudarte.</Text>
           <Text style={[styles.instructionText, { color: colors.text }]}>Presiona el botón para comenzar nuestra conversación.</Text>
-          <TouchableOpacity style={[styles.startButton, { backgroundColor: colors.primary }]} onPress={startConversation}>
+          <TouchableOpacity 
+            style={[styles.startButton, { backgroundColor: colors.primary }]} 
+            onPress={startConversation}
+          >
             <Text style={styles.startButtonText}>¡Hola!</Text>
             <FontAwesome name="hand-o-up" size={24} color="#FFFFFF" style={styles.iconStyle} />
           </TouchableOpacity>
@@ -109,7 +113,7 @@ export default function TabOneScreen() {
             data={messages}
             renderItem={({ item }) => <ChatMessage message={item.text} isUser={item.isUser} />}
             keyExtractor={item => item.id}
-            style={styles.chatList}
+            style={[styles.chatList, { backgroundColor }]}
             onContentSizeChange={scrollToEnd}
             onLayout={scrollToEnd}
           />
@@ -120,7 +124,11 @@ export default function TabOneScreen() {
           )}
           <View style={[styles.inputContainer, { backgroundColor: colors.card, borderTopColor: colors.border }]}>
             <TextInput
-              style={[styles.input, { color: colors.text, borderColor: colors.border }]}
+              style={[styles.input, { 
+                color: colors.text, 
+                borderColor: colors.border,
+                backgroundColor: dark ? '#1A1A1A' : colors.card
+              }]}
               value={inputText}
               onChangeText={setInputText}
               placeholder="Escribe tu mensaje aquí..."
@@ -129,7 +137,11 @@ export default function TabOneScreen() {
               multiline
             />
             <TouchableOpacity onPress={sendMessage} disabled={isLoading} style={styles.sendButton}>
-              <FontAwesome name="send" size={24} color={isLoading ? colors.text + '40' : colors.primary} />
+              <FontAwesome 
+                name="send" 
+                size={24} 
+                color={isLoading ? colors.text + '40' : colors.primary} 
+              />
             </TouchableOpacity>
           </View>
         </>
@@ -141,6 +153,16 @@ export default function TabOneScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+  },
+  header: {
+    height: 60,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderBottomWidth: 1,
+  },
+  headerText: {
+    fontSize: 20,
+    fontWeight: 'bold',
   },
   welcomeContainer: {
     flex: 1,

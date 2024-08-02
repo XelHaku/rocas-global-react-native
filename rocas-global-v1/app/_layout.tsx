@@ -73,13 +73,11 @@ function RootLayoutNav() {
   }
 
   return (
-    // <PrivyProvider appId={'clyah1e3600pz1qdwmit0j2a2'}>
     <ThemeProvider value={theme === "dark" ? DarkTheme : DefaultTheme}>
       <Stack>
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
         <Stack.Screen name="modal" options={{ presentation: "modal" }} />
       </Stack>
     </ThemeProvider>
-    // </PrivyProvider>
   );
 }
