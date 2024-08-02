@@ -74,14 +74,16 @@ function RootLayoutNav() {
   }
 
   return (
-    <Web3AuthProvider>
     <ThemeProvider value={theme === "dark" ? DarkTheme : DefaultTheme}>
+      {/* <Web3AuthProvider> */}
+
       <Stack>
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
         <Stack.Screen name="modal" options={{ presentation: "modal" }} />
       </Stack>
+      {/* </Web3AuthProvider> */}
+
     </ThemeProvider>
-    </Web3AuthProvider>
 
   );
 }
