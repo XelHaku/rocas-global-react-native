@@ -11,6 +11,7 @@ import React from 'react';
 import useAppStore from '@/store/store';
 import Onboarding from '@/components/Onboarding';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { Web3AuthProvider } from '@/context/Web3AuthContext';
 
 
 // Your root component
@@ -73,11 +74,14 @@ function RootLayoutNav() {
   }
 
   return (
+    <Web3AuthProvider>
     <ThemeProvider value={theme === "dark" ? DarkTheme : DefaultTheme}>
       <Stack>
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
         <Stack.Screen name="modal" options={{ presentation: "modal" }} />
       </Stack>
     </ThemeProvider>
+    </Web3AuthProvider>
+
   );
 }
