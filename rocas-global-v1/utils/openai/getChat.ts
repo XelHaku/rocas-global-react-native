@@ -2,7 +2,7 @@ import Constants from 'expo-constants';
 
 export async function getChat(userInput: string): Promise<string> {
   console.log("apikey", Constants.expoConfig);
-  const apiKey = process.env.EXPO_PUBLIC_API_URL;
+  const apiKey = process.env.EXPO_PUBLIC_OPENAI_API_KEY;
 
   if (!apiKey) {
     throw new Error('OpenAI API key is not set');

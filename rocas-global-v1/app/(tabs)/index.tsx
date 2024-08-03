@@ -92,10 +92,10 @@ export default function TabOneScreen() {
     
       {!conversationStarted ? (
         <View style={[styles.welcomeContainer, { backgroundColor }]}>
-          <Image
+          {/* <Image
             source={require('@/assets/images/chatbot.png')}
             style={[styles.botImage, { opacity: dark ? 0.7 : 1 }]}
-          />
+          /> */}
           <Text style={[styles.welcomeText, { color: colors.text }]}>¡Bienvenido! Estoy aquí para ayudarte.</Text>
           <Text style={[styles.instructionText, { color: colors.text }]}>Presiona el botón para comenzar nuestra conversación.</Text>
           <TouchableOpacity 

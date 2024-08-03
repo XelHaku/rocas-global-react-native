@@ -11,7 +11,7 @@ export async function getChapterSummary(
   abstractWordCount: number = 300,
   teachingWordCount: number = 200
 ): Promise<SummaryResponse> {
-  const apiKey = process.env.EXPO_PUBLIC_API_URL;
+  const apiKey = process.env.EXPO_PUBLIC_OPENAI_API_KEY;
   console.log('API Key:', apiKey);
   if (!apiKey) {
     throw new Error('OpenAI API key is not set');
@@ -19,7 +19,7 @@ export async function getChapterSummary(
 
   const bookName = book.replace('.json', '');
 
-  const content = `Dame un resumen del capítulo ${chapter} del libro ${bookName} y sus enseñanzas según el apóstol Guillermo Maldonado. Estructura tu respuesta en dos partes: 1) Resumen y 2) Enseñanzas.`;
+  const content = `Dame un resumen del capítulo ${chapter} del libro ${bookName} y sus enseñanzas según el apóstol Guillermo Maldonado, pero no menciones al Apostol. Estructura tu respuesta en dos partes: 1) Resumen y 2) Enseñanzas.`;
 
   try {
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
