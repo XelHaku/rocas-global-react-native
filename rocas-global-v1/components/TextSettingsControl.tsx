@@ -63,8 +63,8 @@ const TextSettingsControl: React.FC<TextSettingsControlProps> = ({
             <Text style={styles.label}>Velocidad de lectura: {speechRate.toFixed(2)}</Text>
             <Slider
               style={styles.slider}
-              minimumValue={0.1}
-              maximumValue={2}
+              minimumValue={0.3}
+              maximumValue={0.6}
               value={speechRate}
               onValueChange={onChangeSpeechRate}
               thumbTintColor="#D4AF37"

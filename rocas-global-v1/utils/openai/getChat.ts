@@ -21,7 +21,7 @@ export async function getChat(userInput: string): Promise<string> {
         model: 'gpt-4o',
         messages: [{ role: 'user', content }],
         temperature: 0.7,
-        max_tokens: 200 
+        max_tokens: 400 
       })
     });
 
