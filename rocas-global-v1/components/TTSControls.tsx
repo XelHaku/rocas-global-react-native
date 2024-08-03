@@ -6,20 +6,21 @@ import { useTTS } from '@/hooks/useTTS';
 
 interface TTSControlsProps {
   text: string;
+  style?: object;
 }
 
-const TTSControls: React.FC<TTSControlsProps> = ({ text }) => {
+const TTSControls: React.FC<TTSControlsProps> = ({ text, style }) => {
   const { startSpeech, stopSpeech, isPlaying } = useTTS();
   const [isExpanded, setIsExpanded] = useState(false);
-  const slideAnim = useState(new Animated.Value(0))[0];
+  const fadeAnim = useState(new Animated.Value(0))[0];
 
   const toggleExpand = () => {
-    const toValue = isExpanded ? 0 : 1;
-    Animated.spring(slideAnim, {
-      toValue,
+    setIsExpanded(!isExpanded);
+    Animated.timing(fadeAnim, {
+      toValue: isExpanded ? 0 : 1,
+      duration: 300,
       useNativeDriver: true,
     }).start();
-    setIsExpanded(!isExpanded);
   };
 
   const handlePlayStop = () => {
@@ -35,37 +36,47 @@ const TTSControls: React.FC<TTSControlsProps> = ({ text }) => {
     startSpeech(text);
   };
 
-  const translateX = slideAnim.interpolate({
-    inputRange: [0, 1],
-    outputRange: [0, 100],
-  });
-
   return (
-    <View style={styles.container}>
-      <TouchableOpacity 
-        style={styles.speakerButton}
-        onPress={toggleExpand}
+    <View style={[styles.container, style]}>
+      <Animated.View 
+        style={[
+          styles.controlButtonsContainer, 
+          { 
+            opacity: fadeAnim,
+            transform: [
+              {
+                translateX: fadeAnim.interpolate({
+                  inputRange: [0, 1],
+                  outputRange: [50, 0] // Ajusta estos valores según necesites
+                })
+              }
+            ]
+          }
+        ]}
       >
-        <FontAwesome5 name="volume-up" size={20} color="#D4AF37" />
-      </TouchableOpacity>
-      <Animated.View style={[styles.controlButtonsContainer, { transform: [{ translateX }] }]}>
         <TouchableOpacity 
-          style={styles.controlButton}
+          style={styles.button}
           onPress={handlePlayStop}
         >
           <FontAwesome5 
             name={isPlaying ? "stop" : "play"} 
-            size={20} 
+            size={24} 
             color="#D4AF37" 
           />
         </TouchableOpacity>
         <TouchableOpacity 
-          style={styles.controlButton}
+          style={styles.button}
           onPress={handleRestart}
         >
-          <FontAwesome5 name="redo" size={20} color="#D4AF37" />
+          <FontAwesome5 name="redo" size={24} color="#D4AF37" />
         </TouchableOpacity>
       </Animated.View>
+      <TouchableOpacity 
+        style={styles.button}
+        onPress={toggleExpand}
+      >
+        <FontAwesome5 name="volume-up" size={24} color="#D4AF37" />
+      </TouchableOpacity>
     </View>
   );
 };
@@ -74,31 +85,19 @@ const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'center',
+    justifyContent: 'flex-end',
   },
-  speakerButton: {
-    backgroundColor: 'rgba(244, 233, 209, 0.7)',
-    width: 40,
-    height: 40,
-    borderRadius: 20,
+  button: {
+    width: 50,
+    height: 50,
+    borderRadius: 25,
     alignItems: 'center',
     justifyContent: 'center',
-    zIndex: 2,
   },
   controlButtonsContainer: {
     flexDirection: 'row',
     position: 'absolute',
-    left: 20,
-    zIndex: 1,
-  },
-  controlButton: {
-    backgroundColor: 'rgba(244, 233, 209, 0.7)',
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginLeft: 10,
+    right: 50, // Ajusta este valor según sea necesario
   },
 });
 

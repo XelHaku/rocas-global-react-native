@@ -262,7 +262,10 @@ export default function Bible() {
         >
           <FontAwesome5 name="font" size={24} color={customColors.accent} />
         </TouchableOpacity>
-        <TTSControls text={fullText} />
+
+        <View style={[styles.floatingButton, styles.ttsControlsContainer]}>
+          <TTSControls text={fullText} />
+        </View>
 
         <TextSettingsControl
           fontSize={fontSize}
@@ -276,8 +279,6 @@ export default function Bible() {
           isVisible={isTextSettingsVisible}
           onClose={() => setIsTextSettingsVisible(false)}
         />
-
-
       </SafeAreaView>
     </ImageBackground>
   );
@@ -402,9 +403,7 @@ const styles = StyleSheet.create({
     right: 20,
   },
   ttsControlsContainer: {
-  alignItems: 'center',
-  marginTop: 20,
-  marginBottom: 40,
-  height: 60,  // Ajusta este valor según sea necesario
-},
+    bottom: 140,
+    right: 20,
+  },
 });
