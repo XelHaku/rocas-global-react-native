@@ -15,7 +15,7 @@ interface TtsVoice {
   language: string;
 }
 
-export default function TabTwoScreen() {
+export default function ProfileTab() {
   const { 
     setTheme, 
     ttsConfig, 
