@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { StatusBar } from 'expo-status-bar';
 import { Platform, StyleSheet, ActivityIndicator, ScrollView } from 'react-native';
 import { Text, View } from "@/components/Themed";
-import useAppStore from '@/store/store';
+import useAppStore from '@/store/app.store';
 import { getChapterSummary } from '@/utils/openai/getChapterSummary';
 
 export default function ChapterModal() {

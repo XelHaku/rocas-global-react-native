@@ -1,7 +1,7 @@
 import React, { useCallback, useRef, useState, useEffect } from 'react';
 import { StyleSheet, View, Text, TouchableOpacity, FlatList, Dimensions, ScrollView, SafeAreaView, Platform, StatusBar, Animated, ImageBackground, Share, Clipboard, Alert } from 'react-native';
 import { bibliaContent } from '@/constants/bibliaContent';
-import useAppStore from '@/store/store';
+import useAppStore from '@/store/app.store';
 import { useFonts, Lora_400Regular, Lora_700Bold } from '@expo-google-fonts/lora';
 import { useTheme } from '@react-navigation/native';
 import { FontAwesome5 } from '@expo/vector-icons';

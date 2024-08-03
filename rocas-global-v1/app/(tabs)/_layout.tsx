@@ -5,7 +5,7 @@ import { Link, Tabs } from 'expo-router';
 import Colors from '@/constants/Colors';
 import { useColorScheme } from '@/components/useColorScheme';
 import { useClientOnlyValue } from '@/components/useClientOnlyValue';
-import useAppStore from '@/store/store';
+import useAppStore from '@/store/app.store';
 import { useTheme } from '@react-navigation/native';
 import { TabBarIcon } from '@/components/TabBarIcon';
 import { BookSelector } from '@/components/BookSelector';

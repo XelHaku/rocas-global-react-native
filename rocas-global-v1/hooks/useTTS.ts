@@ -1,7 +1,7 @@
 // hooks/useTTS.ts
 import { useState, useEffect, useCallback } from 'react';
 import { Platform } from 'react-native';
-import useAppStore from '@/store/store';
+import useAppStore from '@/store/app.store';
 
 let Tts: any;
 if (Platform.OS !== 'web') {

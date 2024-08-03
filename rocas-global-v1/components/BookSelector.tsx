@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, TouchableOpacity, Modal, FlatList } from 'react-native';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { useTheme } from '@react-navigation/native';
-import useAppStore from '@/store/store';
+import useAppStore from '@/store/app.store';
 import { bibliaRV1960 } from '@/constants/bibliaRV1960';
 import { styles } from '@/constants/styles';
 

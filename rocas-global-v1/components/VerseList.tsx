@@ -1,6 +1,6 @@
 import React from 'react';
 import { FlatList, TouchableOpacity, View, Text } from 'react-native';
-import useAppStore from '@/store/store';
+import useAppStore from '@/store/app.store';
 import { styles } from '@/constants/styles';
 
 export default function VerseList({ bookContent, selectedChapter, customColors, colors }) {

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { StyleSheet, Switch, Platform, Button, Alert, View as RNView } from 'react-native';
 import { Text, View } from '@/components/Themed';
-import useAppStore from '@/store/store';
+import useAppStore from '@/store/app.store';
 import { FontAwesome } from '@expo/vector-icons';
 import Slider from '@react-native-community/slider';
 import { Picker } from '@react-native-picker/picker';

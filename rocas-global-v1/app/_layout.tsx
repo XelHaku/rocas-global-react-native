@@ -8,13 +8,12 @@ import 'react-native-reanimated';
 
 import { useColorScheme } from '@/components/useColorScheme';
 import React from 'react';
-import useAppStore from '@/store/store';
+import useAppStore from '@/store/app.store';
 import Onboarding from '@/components/Onboarding';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Web3AuthProvider } from '@/context/Web3AuthContext';
 
 
-// Your root component
 export {
   ErrorBoundary,
 } from 'expo-router';
