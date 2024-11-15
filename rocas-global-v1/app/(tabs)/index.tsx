@@ -12,11 +12,11 @@ const ChatMessage = ({ message, isUser }: { message: string; isUser: boolean }) 
   return (
     <View style={[
       styles.messageBubble, 
-      isUser ? [styles.userMessage, { backgroundColor: colors.primary }] : [styles.aiMessage, { backgroundColor: colors.card }]
+      isUser ? [styles.userMessage, { backgroundColor: '#7998f6' }] : [styles.aiMessage, { backgroundColor: '#D4AF37' }]
     ]}>
       <Text style={[
         styles.messageText, 
-        isUser ? { color: '#FFFFFF' } : { color: colors.text }
+        isUser ? { color: '#000000' } : { color: colors.text }
       ]}>{message}</Text>
     </View>
   );
@@ -29,7 +29,7 @@ export default function TabOneScreen() {
   const [conversationStarted, setConversationStarted] = useState(false);
   const flatListRef = useRef<FlatList<MessageType>>(null);
   const { colors, dark } = useTheme();
-  const backgroundColor = dark ? '#000000' : '#FFFFFF';
+  const backgroundColor = dark ? '#000000' : '#F0F0F0';
 
   useEffect(() => {
     if (flatListRef.current) {
@@ -89,13 +89,8 @@ export default function TabOneScreen() {
       style={[styles.container, { backgroundColor }]}
       keyboardVerticalOffset={Platform.OS === "ios" ? 64 : 0}
     >
-    
       {!conversationStarted ? (
         <View style={[styles.welcomeContainer, { backgroundColor }]}>
-          {/* <Image
-            source={require('@/assets/images/chatbot.png')}
-            style={[styles.botImage, { opacity: dark ? 0.7 : 1 }]}
-          /> */}
           <Text style={[styles.welcomeText, { color: colors.text }]}>¡Bienvenido! Estoy aquí para ayudarte.</Text>
           <Text style={[styles.instructionText, { color: colors.text }]}>Presiona el botón para comenzar nuestra conversación.</Text>
           <TouchableOpacity 
@@ -103,7 +98,7 @@ export default function TabOneScreen() {
             onPress={startConversation}
           >
             <Text style={styles.startButtonText}>¡Hola!</Text>
-            <FontAwesome name="hand-o-up" size={24} color="#FFFFFF" style={styles.iconStyle} />
+            <FontAwesome name="hand-o-up" size={24} color="gold" style={styles.iconStyle} />
           </TouchableOpacity>
         </View>
       ) : (
@@ -113,7 +108,8 @@ export default function TabOneScreen() {
             data={messages}
             renderItem={({ item }) => <ChatMessage message={item.text} isUser={item.isUser} />}
             keyExtractor={item => item.id}
-            style={[styles.chatList, { backgroundColor }]}
+            style={styles.chatList}
+            contentContainerStyle={styles.chatContentContainer}
             onContentSizeChange={scrollToEnd}
             onLayout={scrollToEnd}
           />
@@ -122,16 +118,15 @@ export default function TabOneScreen() {
               <ActivityIndicator size="large" color={colors.primary} />
             </View>
           )}
-          <View style={[styles.inputContainer, { backgroundColor: colors.card, borderTopColor: colors.border }]}>
+          <View style={[styles.inputContainer, { backgroundColor: colors.background }]}>
             <TextInput
               style={[styles.input, { 
                 color: colors.text, 
-                borderColor: colors.border,
-                backgroundColor: dark ? '#1A1A1A' : colors.card
+                backgroundColor: colors.card
               }]}
               value={inputText}
               onChangeText={setInputText}
-              placeholder="Escribe tu mensaje aquí..."
+              placeholder="Aa"
               placeholderTextColor={colors.text + '80'}
               editable={!isLoading}
               multiline
@@ -140,7 +135,7 @@ export default function TabOneScreen() {
               <FontAwesome 
                 name="send" 
                 size={24} 
-                color={isLoading ? colors.text + '40' : colors.primary} 
+                color={isLoading ? colors.text + '40' : '#D4AF37'} 
               />
             </TouchableOpacity>
           </View>
@@ -154,26 +149,11 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
-  header: {
-    height: 60,
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderBottomWidth: 1,
-  },
-  headerText: {
-    fontSize: 20,
-    fontWeight: 'bold',
-  },
   welcomeContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
     padding: 20,
-  },
-  botImage: {
-    width: 150,
-    height: 150,
-    marginBottom: 20,
   },
   welcomeText: {
     fontSize: 24,
@@ -210,19 +190,24 @@ const styles = StyleSheet.create({
   },
   chatList: {
     flex: 1,
+  },
+  chatContentContainer: {
     padding: 10,
   },
   messageBubble: {
-    maxWidth: '80%',
+    maxWidth: '75%',
     padding: 12,
     borderRadius: 20,
     marginBottom: 10,
   },
   userMessage: {
     alignSelf: 'flex-end',
+    borderBottomRightRadius: 4,
   },
   aiMessage: {
     alignSelf: 'flex-start',
+    maxWidth: '100%',
+    borderBottomLeftRadius: 4,
   },
   messageText: {
     fontSize: 16,
@@ -230,12 +215,10 @@ const styles = StyleSheet.create({
   inputContainer: {
     flexDirection: 'row',
     padding: 10,
-    borderTopWidth: 1,
     alignItems: 'center',
   },
   input: {
     flex: 1,
-    borderWidth: 1,
     borderRadius: 20,
     padding: 10,
     marginRight: 10,

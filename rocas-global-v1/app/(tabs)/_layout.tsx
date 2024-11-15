@@ -33,6 +33,7 @@ export default function TabLayout() {
           setActiveTab(tabName);
         },
       }}
+      initialRouteName="biblia"
     >
       <Tabs.Screen
         name="biblia"

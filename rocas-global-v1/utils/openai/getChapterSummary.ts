@@ -11,7 +11,6 @@ export async function getChapterSummary(
   abstractWordCount: number = 300,
   teachingWordCount: number = 200
 ): Promise<SummaryResponse> {
-  const apiKey = process.env.EXPO_PUBLIC_OPENAI_API_KEY;
   console.log('API Key:', apiKey);
   if (!apiKey) {
     throw new Error('OpenAI API key is not set');
